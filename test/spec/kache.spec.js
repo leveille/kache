@@ -1,18 +1,18 @@
-describe('Kache Memory', function() {
+xdescribe('Kache Memory', function() {
     var cache;
 
-    xdescribe("When kache is enabled/disabled", function() {
+    describe("When kache is enabled/disabled", function() {
         beforeEach(function () {
-            Kache.Memory.enable();
+            Kache.enable();
         });
 
         it("should be enabled", function() {
-            expect(Kache.Memory.enabled()).toEqual(true);
+            expect(Kache.enabled()).toEqual(true);
         });
 
         it("should be disabled", function() {
-            Kache.Memory.disable()
-            expect(Kache.Memory.enabled()).toEqual(false);
+            Kache.disable();
+            expect(Kache.enabled()).toEqual(false);
         });
     });
 

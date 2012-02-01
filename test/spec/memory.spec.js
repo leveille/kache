@@ -1,4 +1,4 @@
-describe('Kache Memory', function() {
+describe('Kache.Memory', function() {
     var cache;
 
     describe("When kache is enabled/disabled", function() {
@@ -82,21 +82,24 @@ describe('Kache Memory', function() {
     });
 
     describe("When expireds cleanup is called", function() {
-        var cacheGuid, cache2, cache2;
+        var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
         beforeEach(function() {
             Kache.Memory.clear();
             Kache.Memory.enable();
 
-            cacheGuid = Kache.guid();
+            cacheGuid = Kache.Guid();
             cache = new Kache.Memory(cacheGuid, 250);
             cache.set('a', 'b', 500);
             cache.set('b', 'c');
             cache.set('c', 'd', 750);
 
-            cache2 = new Kache.Memory(Kache.guid());
-            cache2.set('a', 'b', 1000);
-            cache3 = new Kache.Memory(Kache.guid());
-            cache3.set('a', 'b', 1500);
+            cacheGuid2 = Kache.Guid();
+            cache2 = new Kache.Memory(cacheGuid2, 200);
+            cache2.set('a', 'b');
+
+            cacheGuid3 = Kache.Guid();
+            cache3 = new Kache.Memory(cacheGuid3);
+            cache3.set('a', 'b');
         });
 
         it("should cleanup expired cache entries", function() {
@@ -108,6 +111,9 @@ describe('Kache Memory', function() {
                 expect(cache.get('b')).toEqual(undefined);
                 expect(cache.get('c')).toEqual('d');
                 expect(cache.count()).toEqual(2);
+                expect(cache2.count()).toEqual(0);
+                expect(cache3.get('a')).toEqual('b');
+                expect(cache3._['a'].e).toEqual(0);
             });
         });
     });

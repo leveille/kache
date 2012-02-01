@@ -1,5 +1,26 @@
 root = exports ? this
 
+__version__ = '0.0.1'
+
+guid =->
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
+    r = Math.random() * 16 | 0
+    v = if c is 'x' then r else r & 3 | 8
+    v.toString 16
+  .toUpperCase()
+
+isNumber =(n) ->
+  typeof n == 'number' && isFinite(n)
+
+time =->
+  +new Date()
+
+count =(obj) ->
+  _count = 0
+  for own key, value of obj
+    _count++
+  _count
+
 Defaults =
   enabled: false
   timeout: 0
@@ -8,32 +29,29 @@ class MemoryStore
   __name__: 'MemoryStore'
 
   store: window._kache ?= {}
-  MemoryStore::store['enabled'] ?= Defaults.enabled
-  e_: MemoryStore::store['enabled']
+  e_: MemoryStore::store['enabled'] ?= Defaults.enabled
 
   constructor: (@namespace, @timeout=Defaults.timeout) ->
-    MemoryStore::store[@namespace] ?= {}
-    @_ = MemoryStore::store[@namespace]
+    @_ = MemoryStore::store[@namespace] ?= {}
 
   clear: ->
     @_ = {}
     return
 
   clearExpired: (k) ->
-    if @_[k] and @_[k].e and @_[k].e < MemoryStore.time()
+    if @_[k] and @_[k].e and @_[k].e < time()
       @remove(k)
     false
 
   clearExpireds: ->
     for key, item of @_
-      if item and item.e and item.e < MemoryStore.time()
-        delete item
-        delete @_[key]
+      if item and item.e and item.e < time()
+        @clearExpired key
     return
 
   count: ->
     @clearExpireds()
-    MemoryStore.count(@_)
+    count(@_)
 
   dump: ->
     console.log(@_)
@@ -52,10 +70,10 @@ class MemoryStore
   set: (key, value, timeout) ->
     MemoryStore.clearExpireds()
     timeout ?= @timeout
-    if MemoryStore.isNumber(timeout) and timeout != 0
-      expires = MemoryStore.time() + timeout
+    if isNumber(timeout) and timeout != 0
+      expires = time() + timeout
     try
-      MemoryStore::store[@namespace][key] = {
+      @_[key] = {
         value: value,
         e: expires or 0
       }
@@ -71,33 +89,21 @@ class MemoryStore
     for own key, value of MemoryStore::store
       obj = MemoryStore::store[key]
       for ns, item of obj
-        if item and item.e and item.e < MemoryStore.time()
+        if item and item.e and item.e < time()
           hasDeleted = true
           delete item
       if hasDeleted
         MemoryStore::store[key] = obj
-        if MemoryStore.count(MemoryStore::store[key]) == 0
+        if count(MemoryStore::store[key]) == 0
           delete MemoryStore::store[key]
     return
-
-  @count: (obj) ->
-    count = 0
-    for own key, value of obj
-      count++
-    count
 
   @error: (e) ->
     console.log(e)
     return
 
-  @isNumber: (n) ->
-    typeof n == 'number' && isFinite(n)
-
   @validStore: ->
     true
-
-  @time: ->
-    +new Date()
 
   @toString: ->
     if @namespace and @timeout
@@ -120,29 +126,66 @@ class MemoryStore
 
   @__name__: MemoryStore::__name__
 
-class LocalStore extends MemoryStore
+class LocalStore
   __name__: 'LocalStore'
 
   store: localStorage
-  LocalStore::store['enabled'] ?= Defaults.enabled
-  e_: LocalStore::store['enabled']
+  e_: LocalStore::store['enabled'] ?= Defaults.enabled
 
   constructor: (@namespace, @timeout) ->
     if !LocalStore.validStore()
       throw 'LocalStorage is not a valid cache store'
-    super(@namespace, @timeout)
+    @_ = JSON.parse(LocalStore::store[@namespace] or '{}')
+
+  clearExpired: (k) ->
+    if @_[k] and @_[k].e and @_[k].e < time()
+      @remove(k)
+    false
+
+  clearExpireds: ->
+    for key, item of @_
+      @clearExpired key
+    return
+
+  count: ->
+    @clearExpireds()
+    count(@_)
+
+  get: (k) ->
+    return unless !!LocalStore.enabled()
+    @clearExpired(k)
+    if @_[k] and @_[k].value
+      @_[k].value
+
+  remove: (k) ->
+    delete @_[k]
+    return
+
+  set: (key, value, timeout) ->
+    LocalStore.clearExpireds()
+    timeout ?= @timeout
+    if isNumber(timeout) and timeout != 0
+      expires = time() + timeout
+    try
+      @_[key] = {
+        value: value,
+        e: expires or 0
+      }
+    catch error
+      LocalStore.error(error)
+    return
 
   @clearExpireds: ->
     for own key, value of LocalStore::store
-      obj = JSON.parse(LocalStore::store[key])
+      obj = JSON.parse(@_[key])
       for ns, item of obj
-        if item and item.e and item.e < LocalStore.time()
+        if item and item.e and item.e < time()
           hasDeleted = true
           delete item
       if hasDeleted
         LocalStore::store[key] = JSON.stringify(obj)
-        if LocalStore.count(LocalStore::store[key]) == 0
-          delete LocalStore::store[key]
+        if count(@_[key]) == 0
+          delete @_[key]
     return
 
   @clear: ->
@@ -167,6 +210,10 @@ class LocalStore extends MemoryStore
     else
       LocalStore.__name__
 
+  @dumpAll: ->
+    console.log(LocalStore::store)
+    return
+
   @disable: ->
     LocalStore::e_ = false
 
@@ -178,12 +225,12 @@ class LocalStore extends MemoryStore
 
   @__name__: LocalStore::__name__
 
-class root.Kache
+class _Kache
 
   store: LocalStore
 
   constructor: (@namespace, @timeout=0) ->
-    @instance = Kache::store(@namespace, @timeout)
+    @instance = _Kache::store(@namespace, @timeout)
 
   clear: ->
     @instance.clear()
@@ -208,37 +255,33 @@ class root.Kache
     return
 
   @clear: ->
-    Kache::store.clear()
+    _Kache::store.clear()
     return
 
   @clearExpireds: ->
-    Kache::store.clearExpireds()
+    _Kache::store.clearExpireds()
     return
 
   @disable: ->
-    Kache::store::e_ = false
+    _Kache::store::e_ = false
 
   @dumpAll: ->
-    console.log(Kache::store::store)
+    console.log(_Kache::store::store)
     return
 
   @enable: ->
-    console.log(Kache::store)
+    console.log(_Kache::store)
     Kache::store::e_ = true
 
   @enabled: ->
-    !!Kache::store::e_
+    !!_Kache::store::e_
 
-guid = ->
-  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
-    r = Math.random() * 16 | 0
-    v = if c is 'x' then r else r & 3 | 8
-    v.toString 16
-  .toUpperCase()
+root.Kache = (namespace, timeout) ->
+  new _Kache(namespace, timeout)
 
-root.Kache.Store     = Kache::store::__name__
-root.Kache.Memory    = MemoryStore
-root.Kache.Local     = LocalStore
-root.Kache.version   = '0.0.1'
-root.Kache.guid      = guid
+root.Kache.Guid         = guid
+root.Kache.Local        = LocalStore
+root.Kache.Memory       = MemoryStore
+root.Kache.__version__  = __version__
+
 

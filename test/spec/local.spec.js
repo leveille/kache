@@ -3,34 +3,32 @@ describe('Kache.Local', function() {
 
     describe("When kache is enabled/disabled", function() {
         beforeEach(function () {
-            Kache.Local.clearStore();
-            Kache.Local.enable();
+            Kache.Local.clearStore().enable();
             cache = new Kache.Local('test');
             cache.set('foo', 'bar');
         });
 
         it("should be enabled", function() {
-            expect(Kache.Local.enabled()).toEqual(true);
+            expect(Kache.Local.enabled).toEqual(true);
         });
 
         it("should be disabled", function() {
             Kache.Local.disable()
-            expect(Kache.Local.enabled()).toEqual(false);
+            expect(Kache.Local.enabled).toEqual(false);
             expect(cache.get('foo')).toEqual(null);
         });
     });
 
     describe("When js cache items are set", function() {
         beforeEach(function () {
-            Kache.Local.clearStore();
-            Kache.Local.enable();
+            Kache.Local.clearStore().enable();
             cache = new Kache.Local('test');
             cache.set('foo', 'bar', 100);
             cache.set('bar', 'baz', 200);
         });
 
         it("should have an enabled value after clear", function() {
-            expect(Kache.Local.enabled()).toEqual(true);
+            expect(Kache.Local.enabled).toEqual(true);
         });
 
         it("shouldn't have expired anything", function() {
@@ -70,8 +68,7 @@ describe('Kache.Local', function() {
     describe("When expireds cleanup is called", function() {
         var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
         beforeEach(function() {
-            Kache.Local.clearStore();
-            Kache.Local.enable();
+            Kache.Local.clearStore().enable();
 
             cacheGuid = Kache.Guid();
             cache = new Kache.Local(cacheGuid, 250);

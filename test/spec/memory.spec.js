@@ -3,19 +3,10 @@ describe('Kache.Memory', function() {
 
     describe("When kache is enabled/disabled", function() {
         beforeEach(function () {
-            Kache.Memory.clear();
+            Kache.Memory.clearStore()
             Kache.Memory.enable();
             cache = new Kache.Memory('test');
             cache.set('foo', 'bar', 10);
-        });
-
-        afterEach(function () {
-            Kache.Memory.clear();
-            Kache.Memory.disable();
-        });
-
-        it("should be the correct object", function() {
-            expect(Kache.Memory.__name__).toEqual('MemoryStore');
         });
 
         it("should be enabled", function() {
@@ -31,7 +22,7 @@ describe('Kache.Memory', function() {
 
     describe("When js cache items are set", function() {
         beforeEach(function () {
-            Kache.Memory.clear();
+            Kache.Memory.clearStore()
             Kache.Memory.enable();
             cache = new Kache.Memory('test');
             cache.set('foo', 'bar', 100);
@@ -81,10 +72,10 @@ describe('Kache.Memory', function() {
         });
     });
 
-    describe("When expireds cleanup is called", function() {
+    xdescribe("When expireds cleanup is called", function() {
         var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
         beforeEach(function() {
-            Kache.Memory.clear();
+            Kache.Memory.clearStore()
             Kache.Memory.enable();
 
             cacheGuid = Kache.Guid();

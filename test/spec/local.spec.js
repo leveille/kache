@@ -3,14 +3,10 @@ describe('Kache.Local', function() {
 
     describe("When kache is enabled/disabled", function() {
         beforeEach(function () {
-            Kache.Local.clear();
+            Kache.Local.clearStore();
             Kache.Local.enable();
             cache = new Kache.Local('test');
-            cache.set('foo', 'bar', 10);
-        });
-
-        it("should be the correct object", function() {
-            expect(Kache.Local.__name__).toEqual('LocalStore');
+            cache.set('foo', 'bar');
         });
 
         it("should be enabled", function() {
@@ -26,7 +22,7 @@ describe('Kache.Local', function() {
 
     describe("When js cache items are set", function() {
         beforeEach(function () {
-            Kache.Local.clear();
+            Kache.Local.clearStore();
             Kache.Local.enable();
             cache = new Kache.Local('test');
             cache.set('foo', 'bar', 100);
@@ -46,7 +42,7 @@ describe('Kache.Local', function() {
         });
 
         it("should have expired an entry", function() {
-            waits(100);
+            waits(110);
             runs(function () {
                 expect(cache.get('foo')).toBeUndefined();
                 expect(cache.get('bar')).toEqual('baz');
@@ -74,7 +70,7 @@ describe('Kache.Local', function() {
     describe("When expireds cleanup is called", function() {
         var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
         beforeEach(function() {
-            Kache.Local.clear();
+            Kache.Local.clearStore();
             Kache.Local.enable();
 
             cacheGuid = Kache.Guid();

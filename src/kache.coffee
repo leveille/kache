@@ -12,6 +12,9 @@ guid =->
 isNumber =(n) ->
   typeof n == 'number' && isFinite(n)
 
+isExpired =(item) ->
+  item and item.e and item.e < time()
+
 time =->
   +new Date()
 
@@ -21,209 +24,225 @@ count =(obj) ->
     _count++
   _count
 
-Defaults =
-  enabled: false
-  timeout: 0
+root.KacheConfig          ?=
+  enabled: false,
+  defaultTimeout: 0
+
+root.KacheConfig.Timeouts ?= {}
 
 class MemoryStore
-  __name__: 'MemoryStore'
+  _storage = root._kachestore ?=
+    _kachestore =
+      store: {},
+      enabled: root.KacheConfig.enabled
 
-  store: window._kache ?= {}
-  e_: MemoryStore::store['enabled'] ?= Defaults.enabled
+  _kache = _storage['_kachestore'] ?= {}
+  _store = _kache['store'] ?= {}
+  _enabled = _kache['enabled'] ?= root.KacheConfig.enabled
 
-  constructor: (@namespace, @timeout=Defaults.timeout) ->
-    @_ = MemoryStore::store[@namespace] ?= {}
+  _clearExpireds =->
+    for own key, value of _store
+      obj = _store[key]
+      for ns, item of obj
+        if isExpired item
+          hasDeleted = true
+          delete item
+      if hasDeleted
+        _store[key] = obj
+        if count(_store[key]) == 0
+          delete _store[key]
+    return
+
+  _clearStore =->
+    _store = {}
+
+  _error =(e)->
+    console.log e
+
+  constructor: (@namespace, @timeout) ->
+    @timeout ?= root.KacheConfig.Timeouts[@namespace] or root.KacheConfig.defaultTimeout
+    @_ = _store[@namespace] ?= {}
 
   clear: ->
     @_ = {}
-    return
+    @
 
   clearExpired: (k) ->
-    if @_[k] and @_[k].e and @_[k].e < time()
-      @remove(k)
-    false
+    if isExpired @_[k]
+      @remove k
+    @
 
   clearExpireds: ->
     for key, item of @_
-      if item and item.e and item.e < time()
+      if isExpired item
         @clearExpired key
-    return
+    @
 
   count: ->
     @clearExpireds()
     count(@_)
 
   dump: ->
-    console.log(@_)
+    console.log @_
+    @
+
+  error: (e) ->
+    _error(e)
     return
 
   get: (k) ->
-    return unless !!MemoryStore.enabled()
-    @clearExpired(k)
+    return unless !!_enabled
+    @clearExpired k
     if @_[k] and @_[k].value
       @_[k].value
 
   remove: (k) ->
     delete @_[k]
-    return
+    @
 
   set: (key, value, timeout) ->
-    MemoryStore.clearExpireds()
+    _clearExpireds()
     timeout ?= @timeout
     if isNumber(timeout) and timeout != 0
       expires = time() + timeout
     try
-      @_[key] = {
+      @_[key] =
         value: value,
         e: expires or 0
-      }
     catch error
-      MemoryStore.error(error)
-    return
+      @error(error)
+    @
 
-  @clear: ->
-    MemoryStore::store = {}
+  toString: ->
+    "#{@namespace} : #{@timeout}"
+    @
+
+  @clearStore: ->
+    _clearStore()
     return
 
   @clearExpireds: ->
-    for own key, value of MemoryStore::store
-      obj = MemoryStore::store[key]
-      for ns, item of obj
-        if item and item.e and item.e < time()
-          hasDeleted = true
-          delete item
-      if hasDeleted
-        MemoryStore::store[key] = obj
-        if count(MemoryStore::store[key]) == 0
-          delete MemoryStore::store[key]
+    _clearExpireds()
     return
 
-  @error: (e) ->
-    console.log(e)
-    return
+  @disable: ->
+    _enabled = false
+
+  @enable: ->
+    _enabled = true
+
+  @enabled: ->
+    !!_enabled
 
   @validStore: ->
     true
 
-  @toString: ->
-    if @namespace and @timeout
-      "#{MemoryStore.__name__} #{@namespace} : #{@timeout}"
-    else
-      MemoryStore.__name__
+class LocalStore
+  _storage = localStorage
 
-  @dumpAll: ->
-    console.log(MemoryStore::store)
+  _kache = _storage['_kache'] ?= {}
+  _store = _kache['store'] ?= {}
+  _enabled = _kache['enabled'] ?= root.KacheConfig.enabled
+
+  _clearStore =->
+    _store = {}
+
+  _clearExpireds =->
+    for own key, value of _store
+      for k, item of JSON.parse value
+        if isExpired item
+          hasDeleted = true
+          delete item
+        if hasDeleted
+          if count(value) == 0
+            delete value
+            return
+        value ?= {}
+        _store[key] = JSON.stringify value
     return
 
-  @disable: ->
-    MemoryStore::e_ = false
+  _error =(e)->
+    if e == QUOTA_EXCEEDED_ERR
+      console.log 'QUOTA_EXCEEDED_ERR'
+      _clearExpireds()
+    return
 
-  @enable: ->
-    MemoryStore::e_ = true
-
-  @enabled: ->
-    !!MemoryStore::e_
-
-  @__name__: MemoryStore::__name__
-
-class LocalStore
-  __name__: 'LocalStore'
-
-  store: localStorage
-  e_: LocalStore::store['enabled'] ?= Defaults.enabled
+  _writeThrough =(inst) ->
+    _store[inst.namespace] = JSON.stringify inst._
 
   constructor: (@namespace, @timeout) ->
     if !LocalStore.validStore()
       throw 'LocalStorage is not a valid cache store'
-    @_ = JSON.parse(LocalStore::store[@namespace] or '{}')
+    @timeout ?= root.KacheConfig.Timeouts[@namespace] or root.KacheConfig.defaultTimeout
+    @_ = JSON.parse _store[@namespace] or '{}'
 
   clearExpired: (k) ->
-    if @_[k] and @_[k].e and @_[k].e < time()
+    if isExpired @_[k]
       @remove(k)
-    false
+    _writeThrough(@)
+    @
 
   clearExpireds: ->
     for key, item of @_
       @clearExpired key
-    return
+    _writeThrough(@)
+    @
 
   count: ->
     @clearExpireds()
     count(@_)
 
   get: (k) ->
-    return unless !!LocalStore.enabled()
-    @clearExpired(k)
+    return unless !!_enabled
+    @clearExpired k
     if @_[k] and @_[k].value
       @_[k].value
 
   remove: (k) ->
     delete @_[k]
-    return
+    _writeThrough(@)
+    @
 
-  set: (key, value, timeout) ->
-    LocalStore.clearExpireds()
+  set: (k, value, timeout) ->
+    @clearExpireds()
     timeout ?= @timeout
     if isNumber(timeout) and timeout != 0
       expires = time() + timeout
     try
-      @_[key] = {
+      @_[k] =
         value: value,
         e: expires or 0
-      }
+      _writeThrough @ or @remove k
     catch error
-      LocalStore.error(error)
+      _error error
+    @
+
+  toString: ->
+    "#{@namespace} : #{@timeout}"
+    @
+
+  @clearStore: ->
+    _clearStore()
     return
 
   @clearExpireds: ->
-    for own key, value of LocalStore::store
-      obj = JSON.parse(@_[key])
-      for ns, item of obj
-        if item and item.e and item.e < time()
-          hasDeleted = true
-          delete item
-      if hasDeleted
-        LocalStore::store[key] = JSON.stringify(obj)
-        if count(@_[key]) == 0
-          delete @_[key]
+    _clearExpireds()
     return
 
-  @clear: ->
-    LocalStore::store.clear()
-    return
+  @disable: ->
+    _enabled = false
 
-  @error: (e) ->
-    if e == QUOTA_EXCEEDED_ERR
-      console.log('QUOTA_EXCEEDED_ERR')
-      @clearExpireds()
-    return
+  @enable: ->
+    _enabled = true
+
+  @enabled: ->
+    !!_enabled
 
   @validStore: ->
     try
       !!localStorage || !!globalStorage
     catch error
       false
-
-  @toString: ->
-    if @namespace and @timeout
-      "#{LocalStore.__name__} #{@namespace} : #{@timeout}"
-    else
-      LocalStore.__name__
-
-  @dumpAll: ->
-    console.log(LocalStore::store)
-    return
-
-  @disable: ->
-    LocalStore::e_ = false
-
-  @enable: ->
-    LocalStore::e_ = true
-
-  @enabled: ->
-    !!LocalStore::e_
-
-  @__name__: LocalStore::__name__
 
 class _Kache
 
@@ -279,9 +298,7 @@ class _Kache
 root.Kache = (namespace, timeout) ->
   new _Kache(namespace, timeout)
 
-root.Kache.Guid         = guid
-root.Kache.Local        = LocalStore
-root.Kache.Memory       = MemoryStore
-root.Kache.__version__  = __version__
-
-
+root.Kache.Guid             = guid
+root.Kache.Local            = LocalStore
+root.Kache.Memory           = MemoryStore
+root.Kache.__version__      = __version__

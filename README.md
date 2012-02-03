@@ -1,7 +1,7 @@
 Kache - a Local Storage Utility
 -------------------------------
 
-Kache leverages HTML5 localStorage when available and falls back to an in-browser object store when it isn't.
+Inspired by kizzy (https://github.com/ded/Kizzy), Kache leverages HTML5 localStorage when available and falls back to an in-browser object store when it isn't.
 
 Example
 

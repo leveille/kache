@@ -12,7 +12,6 @@
   "main" : "./kache.js",
   "devDependencies" :
   {
-    "coffee-script" : ">= 1.2.0",
-    "jasmine-node" : ">= 1.0.20"
+    "coffee-script" : ">= 1.2.0"
   }
 }

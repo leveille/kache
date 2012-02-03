@@ -21,27 +21,33 @@ if(Kache.Memory !== undefined) {
         });
 
         describe("When js cache items are set", function() {
+            var bar, baz;
             beforeEach(function () {
                 Kache.Memory.clearStore().enable();
                 cache = new Kache.Memory('test');
-                cache.set('foo', 'bar', 100);
-                cache.set('bar', 'baz', 200);
+                bar = cache.set('foo', 'bar', 100);
+                baz = cache.set('bar', 'baz', 200);
             });
 
             it("should have an enabled value after clear", function() {
                 expect(Kache.Memory.isEnabled()).toEqual(true);
             });
 
+            it("should return a value when set", function() {
+                expect(bar).toEqual('bar');
+                expect(baz).toEqual('baz');
+            });
+
             it("should have correct cache values", function() {
-                expect(cache.get('foo')).toEqual('bar');
-                expect(cache.get('bar')).toEqual('baz');
+                expect(cache.get('foo')).toEqual(bar);
+                expect(cache.get('bar')).toEqual(baz);
             });
 
             it("shouldn't have expired anything", function() {
                 waits(75);
                 runs(function () {
-                    expect(cache.get('foo')).toEqual('bar');
-                    expect(cache.get('bar')).toEqual('baz');
+                    expect(cache.get('foo')).toEqual(bar);
+                    expect(cache.get('bar')).toEqual(baz);
                 });
             });
 
@@ -49,7 +55,7 @@ if(Kache.Memory !== undefined) {
                 waits(100);
                 runs(function () {
                     expect(cache.get('foo')).toBeUndefined();
-                    expect(cache.get('bar')).toEqual('baz');
+                    expect(cache.get('bar')).toEqual(baz);
                 });
             });
 

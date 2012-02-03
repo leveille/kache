@@ -28,15 +28,21 @@ describe('Kache', function() {
     });
 
     describe("When js cache items are set", function() {
+        var set1, set2;
         beforeEach(function () {
             Kache.clearStore().enable();
             cache = Kache('test');
-            cache.set('foo', 'bar', 100);
-            cache.set('bar', 'baz', 200);
+            set1 = cache.set('foo', 'bar', 100);
+            set2 = cache.set('bar', 'baz', 200);
         });
 
         it("should have an enabled value after clear", function() {
             expect(Kache.isEnabled()).toEqual(true);
+        });
+
+        it("should return a value when set", function() {
+            expect(set1).toEqual('bar');
+            expect(set2).toEqual('baz');
         });
 
         it("should have correct cache values", function() {
@@ -47,8 +53,8 @@ describe('Kache', function() {
         it("shouldn't have expired anything", function() {
             waits(75);
             runs(function () {
-                expect(cache.get('foo')).toEqual('bar');
-                expect(cache.get('bar')).toEqual('baz');
+                expect(cache.get('foo')).toEqual(set1);
+                expect(cache.get('bar')).toEqual(set2);
             });
         });
 
@@ -56,7 +62,7 @@ describe('Kache', function() {
             waits(100);
             runs(function () {
                 expect(cache.get('foo')).toBeUndefined();
-                expect(cache.get('bar')).toEqual('baz');
+                expect(cache.get('bar')).toEqual(set2);
             });
         });
 

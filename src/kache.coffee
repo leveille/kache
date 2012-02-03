@@ -95,7 +95,8 @@ class Store
       @writeThrough()
     catch e
       @error(e)
-    @
+      value = null
+    value
 
   toString: ->
     "#{@namespace} : #{@timeout}"
@@ -256,7 +257,6 @@ class _Kache
 
   set: (key, value, timeout) ->
     @instance.set(key, value, timeout)
-    @
 
 root.Kache = (namespace, timeout, atts) ->
   new _Kache(namespace, timeout, atts)

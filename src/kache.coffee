@@ -256,7 +256,7 @@ class _Kache
     @
 
   set: (key, value, timeout) ->
-    @instance.set(key, value, timeout)
+    @instance.set key, value, timeout
 
 root.Kache = (namespace, timeout, atts) ->
   new _Kache(namespace, timeout, atts)

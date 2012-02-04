@@ -107,12 +107,11 @@ class Store
     @
 
 class MemoryStore extends Store
-  @storage: -> root._kachestore ?=
-    _kachestore =
+  root._kache ?=
+    _kache =
       store: {},
       enabled: root.KacheConfig.enabled
-  @kache: @storage['_kachestore'] ?= {}
-  @enabled: @kache['enabled'] ?= root.KacheConfig.enabled
+  @kache: root._kache
 
   @clearExpireds: ->
     for own key, value of @store
@@ -132,7 +131,7 @@ class MemoryStore extends Store
     @
 
   @disable: ->
-    LocalStore.enabled = false
+    root._kache.enabled = false
     @
 
   @dumpall: ->
@@ -140,16 +139,16 @@ class MemoryStore extends Store
     @
 
   @enable: ->
-    LocalStore.enabled = true
+    root._kache.enabled = true
     @
 
   @isEnabled: ->
-    !!LocalStore.enabled
+    !!root._kache.enabled
 
   @validStore: ->
     true
 
-  store: @kache['store'] ?= {}
+  store: root._kache.store
 
   constructor: (@namespace, @timeout, @atts) ->
     @_ = @store[@namespace] ?= {}
@@ -159,12 +158,10 @@ class MemoryStore extends Store
     !!MemoryStore.isEnabled()
 
 class LocalStore extends Store
-  @storage: localStorage
-  @kache: @storage['_kache'] ?= {}
-  @enabled: @kache['enabled'] ?= root.KacheConfig.enabled
+  _enabled_key = '_kache_enabled'
 
   @clearStore: ->
-    @store = {}
+    localStorage.clear()
     @
 
   @clearExpireds: ->
@@ -182,11 +179,11 @@ class LocalStore extends Store
     @
 
   @enable: ->
-    LocalStore.enabled = true
+    localStorage[_enabled_key] = 'true'
     @
 
   @disable: ->
-    LocalStore.enabled = false
+    localStorage[_enabled_key] = 'false'
     @
 
   @dumpall: ->
@@ -194,7 +191,7 @@ class LocalStore extends Store
     @
 
   @isEnabled: ->
-    !!LocalStore.enabled
+    localStorage[_enabled_key] == 'true'
 
   @validStore: ->
     try
@@ -202,7 +199,7 @@ class LocalStore extends Store
     catch error
       false
 
-  store: @kache['store'] ?= {}
+  store: localStorage
 
   constructor: (@namespace, @timeout, @atts) ->
     if !LocalStore.validStore()

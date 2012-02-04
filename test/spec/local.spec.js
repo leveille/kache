@@ -6,16 +6,22 @@ if(Kache.Local !== undefined && !!localStorage) {
             beforeEach(function () {
                 Kache.Local.clearStore().enable();
                 cache = new Kache.Local('test');
-                cache.set('foo', 'bar');
+                cache.set('foo', 'bar', 10);
             });
 
             it("should be enabled", function() {
                 expect(Kache.Local.isEnabled()).toEqual(true);
+                expect(!!localStorage._kache_enabled).toEqual(true);
             });
 
             it("should be disabled", function() {
-                Kache.Local.disable()
+                Kache.Local.disable();
                 expect(Kache.Local.isEnabled()).toEqual(false);
+                expect(!localStorage._kache_enabled).toEqual(false);
+            });
+
+            it("should not return a value when disabled", function() {
+                Kache.Local.disable();
                 expect(cache.get('foo')).toEqual(null);
             });
         });

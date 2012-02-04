@@ -11,11 +11,17 @@ if(Kache.Memory !== undefined) {
 
             it("should be enabled", function() {
                 expect(Kache.Memory.isEnabled()).toEqual(true);
+                expect(window._kache.enabled).toEqual(true);
             });
 
             it("should be disabled", function() {
                 Kache.Memory.disable();
                 expect(Kache.Memory.isEnabled()).toEqual(false);
+                expect(window._kache.enabled).toEqual(false);
+            });
+
+            it("should not return a value when disabled", function() {
+                Kache.Memory.disable();
                 expect(cache.get('foo')).toEqual(null);
             });
         });
@@ -52,7 +58,7 @@ if(Kache.Memory !== undefined) {
             });
 
             it("should have expired an entry", function() {
-                waits(100);
+                waits(110);
                 runs(function () {
                     expect(cache.get('foo')).toBeUndefined();
                     expect(cache.get('bar')).toEqual(baz);

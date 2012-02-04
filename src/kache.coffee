@@ -143,7 +143,9 @@ class MemoryStore extends Store
     @
 
   @isEnabled: ->
-    !!root._kache.enabled
+    !!((root._kache and root._kache.enabled) \
+        or (root.KacheConfig and root.KacheConfig.enabled) \
+        or false)
 
   @validStore: ->
     true
@@ -191,7 +193,9 @@ class LocalStore extends Store
     @
 
   @isEnabled: ->
-    localStorage[_enabled_key] == 'true'
+    !!((localStorage[_enabled_key] and localStorage[_enabled_key] == 'true') \
+        or (root.KacheConfig and root.KacheConfig.enabled) \
+        or false)
 
   @validStore: ->
     try

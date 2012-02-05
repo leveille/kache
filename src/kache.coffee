@@ -36,7 +36,14 @@ class Store
   constructor: (@namespace, @timeout, @atts) ->
     if not @_
       throw 'Invalid Cache Instance'
-    @timeout ?= root.KacheConfig.Timeouts[@namespace] or root.KacheConfig.defaultTimeout
+    if root.KacheConfig
+      if root.KacheConfig.Timeouts and root.KacheConfig.Timeouts[@namespace]
+        timeout = root.KacheConfig.Timeouts[@namespace]
+      else if root.KacheConfig.defaultTimeout
+        timeout = root.KacheConfig.defaultTimeout
+      else
+        timeout = 0
+    @timeout ?= timeout
     @load atts if atts
 
   clear: ->
@@ -71,8 +78,8 @@ class Store
   get: (k) ->
     return unless !!@enabled()
     @clearExpired k
-    if @_[k] and @_[k].value
-      @_[k].value
+    if @_[k] and @_[k].v
+      @_[k].v
 
   load: (atts) ->
     for key, value of atts
@@ -90,8 +97,9 @@ class Store
       expires = time() + timeout
     try
       @_[key] =
-        value: value,
-        e: expires or 0
+        v: value,
+        e: expires or 0,
+        t: timeout
       @writeThrough()
     catch e
       @error(e)
@@ -233,34 +241,8 @@ DefaultStore =
   else
     MemoryStore
 
-class _Kache
-  constructor: (@namespace, @timeout, @atts) ->
-    @instance = new DefaultStore(@namespace, @timeout, @atts)
-    @_ = @instance._
-
-  clear: ->
-    @instance.clear()
-    @
-
-  clearExpireds: ->
-    @instance.clearExpireds()
-    @
-
-  count: ->
-    @instance.count()
-
-  get: (key) ->
-    @instance.get key
-
-  remove: ->
-    @instance.remove()
-    @
-
-  set: (key, value, timeout) ->
-    @instance.set key, value, timeout
-
 root.Kache = (namespace, timeout, atts) ->
-  new _Kache(namespace, timeout, atts)
+  new DefaultStore(namespace, timeout, atts)
 
 root.Kache.Guid             = guid
 root.Kache.Local            = LocalStore

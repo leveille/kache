@@ -1,6 +1,6 @@
 describe('Kache', function() {
     var cache;
-
+    var enabled = Kache.isEnabled();
     describe("When kache is enabled/disabled", function() {
         beforeEach(function () {
             Kache.clearStore().enable();
@@ -24,6 +24,12 @@ describe('Kache', function() {
         it("should return  null when disabled", function() {
             Kache.disable();
             expect(cache.get('foo')).toEqual(null);
+        });
+
+        it("should retain enabled value when store is cleared", function() {
+            var enabled = Kache.isEnabled();
+            Kache.clearStore();
+            expect(enabled).toEqual(Kache.isEnabled());
         });
     });
 

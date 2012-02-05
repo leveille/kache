@@ -171,7 +171,9 @@ class LocalStore extends Store
   _enabled_key = '_kache_enabled'
 
   @clearStore: ->
+    enabled = @isEnabled()
     localStorage.clear()
+    localStorage[_enabled_key] = enabled
     @
 
   @clearExpireds: ->

@@ -39,7 +39,7 @@ Kache will also look for the existance of a Timeouts object.  In the event that 
 Enabling/Disabling Kache
 ------------------------
 
-You can control whether or not Kache is enabled via the 'enabled' option in KacheConfig.  You can ovverride this setting by explicitly enabling or disabling Kache:
+You can control whether or not Kache is enabled via the 'enabled' option in KacheConfig.  You can override this setting by explicitly enabling or disabling Kache:
 
     Kache.enable();
     alert(Kache.isEnabled()); // true
@@ -50,7 +50,8 @@ You can control whether or not Kache is enabled via the 'enabled' option in Kach
 Of note, if localStorage is supported, and the Kache store in use is localStorage, enabling kache via `Kache.enable()` will set a localStorage variable indicating the enabled/disabled status.  This variable will allow you to retain the status between page requests (which should ease testing).
 
     Kache.enable();
-    alert(localStorage._kache_enabled); // This variable is subject to change.  I'm showing it here for illustration purposes.
+    alert(localStorage._kache_enabled); // This variable is subject to change.
+                                        // I'm showing it here for illustration purposes.
 
 This variable *WILL OVERRIDE* the enabled value set in KacheConfig.
 
@@ -59,7 +60,7 @@ Timeouts
 
 There are 4 ways you can define timeouts for cache objects.
 
-1. By defining a global defaultTimeout (see KacheConfiguration variable):
+*By defining a global defaultTimeout (see KacheConfiguration variable):*
 
     window.KacheConfig.defaultTimeout = 3000; // Sets default object timeout of 3 seconds
 
@@ -71,7 +72,7 @@ There are 4 ways you can define timeouts for cache objects.
         alert(cache.get('User')); // Should have timed out
     }, 3500);
 
-2. By defining a Kache namespace timeout via the Timeouts config:
+*By defining a Kache namespace timeout via the Timeouts config:*
 
     window.KacheConfig.Timeouts = {
         'users': 3000
@@ -85,7 +86,7 @@ There are 4 ways you can define timeouts for cache objects.
         alert(cache.get('User')); // Should have timed out
     }, 3500);
 
-3. The Kache constructor also accepts a timeout, which sets a default timeout for any cache instances created within that cache namespace:
+*The Kache constructor also accepts a timeout, which sets a default timeout for any cache instances created within that cache namespace:*
 
     var cache = Kache('users', 5000); // all cache instances will default to a 5 second expiration
     cache.set('User', 'Jason Leveille');
@@ -100,7 +101,7 @@ There are 4 ways you can define timeouts for cache objects.
       alert(cache.get('User') === undefined ? 'Expired' : 'Still Alive')
     }, 6000);
 
-4. set accepts an optional 3rd parameter indicating the expiration time for a cache object:
+*set accepts an optional 3rd parameter indicating the expiration time for a cache object:*
 
     var cache = Kache('users');
     cache.set('User', 'Jason Leveille', 5000);
@@ -132,7 +133,7 @@ For example, the following cache bucket will have an expiration time of 4 second
     };
 
     var cache = Kache('users', 3000); // Overrides KacheConfig.Timeouts.users
-    cache.set('User', 'Jason Leveille', 4000); // Ovverrides Kache constructor
+    cache.set('User', 'Jason Leveille', 4000); // Overrides Kache constructor
 
     // wait 3.5 seconds...
     setTimeout(function() {

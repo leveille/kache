@@ -1,3 +1,5 @@
+[<img src="https://secure.travis-ci.org/leveille/kache.png" />](http://travis-ci.org/#!/leveille/kache)
+
 Kache - a Local Storage Utility
 ===============================
 

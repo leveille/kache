@@ -62,7 +62,7 @@ Timeouts
 
 There are 4 ways you can define timeouts for cache objects.
 
-*By defining a global defaultTimeout (see KacheConfiguration variable):*
+*By defining a global defaultTimeout (see KacheConfig variable):*
 
     window.KacheConfig.defaultTimeout = 3000; // Sets default object timeout of 3 seconds
 
@@ -120,12 +120,12 @@ There are 4 ways you can define timeouts for cache objects.
 
 ### Timeout Override order
 
-Cache timeouts are listed here, in the order of preference:
+Cache timeouts are listed here, in the order of precedence:
 
 1. set
 2. Kache Constructor
 3. KacheConfig.Timeouts
-4. defaultTimeout
+4. KacheConfig.defaultTimeout
 
 For example, the following cache bucket will have an expiration time of 4 seconds:
 

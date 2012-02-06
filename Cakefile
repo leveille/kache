@@ -21,5 +21,11 @@ uglify = (callback) ->
 
 task 'build', 'Build lib/ from src/', ->
   build()
+
+task 'minify', 'Minify Kache', ->
+  uglify()
+
+task 'build:all', 'Build lib/ from src/ and minify kache', ->
+  build()
   uglify()
 

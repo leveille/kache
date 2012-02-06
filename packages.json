@@ -12,6 +12,7 @@
   "main" : "./kache.js",
   "devDependencies" :
   {
-    "coffee-script" : ">= 1.2.0"
+    "coffee-script" : ">= 1.2.0",
+    "uglify-js" : ">= 1.2.5"
   }
 }

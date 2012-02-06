@@ -65,7 +65,7 @@ describe('Kache', function() {
         });
 
         it("should have expired an entry", function() {
-            waits(100);
+            waits(110);
             runs(function () {
                 expect(cache.get('foo')).toBeUndefined();
                 expect(cache.get('bar')).toEqual(set2);

@@ -154,4 +154,9 @@ Changes should be made to src/kache.coffee and built.  In order you build you to
 Running tests
 -------------------------------
 
-    $ open test/public/index.html
+    $ open public/index.html
+
+Or, if you have jasmine installed:
+
+    $ rake jasmine:ci
+    

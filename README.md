@@ -11,13 +11,13 @@ Usage
     if (user) {
         alert(user);
     } else {
-        cache.set('User', 'Jason Leveille');
+        cache.set('User', 'Tom Brady');
     }
 
 Calling 'set' will return the cache value.
 
     var cache = Kache('users');
-    var user = cache.get('User') || cache.set('User', 'Jason Leveille');
+    var user = cache.get('User') || cache.set('User', 'Tom Brady');
 
 Kache Configuration
 -------------------
@@ -65,7 +65,7 @@ There are 4 ways you can define timeouts for cache objects.
     window.KacheConfig.defaultTimeout = 3000; // Sets default object timeout of 3 seconds
 
     var cache = Kache('users');
-    cache.set('User', 'Jason Leveille');
+    cache.set('User', 'Tom Brady');
 
     // wait 3.5 seconds...
     setTimeout(function() {
@@ -79,7 +79,7 @@ There are 4 ways you can define timeouts for cache objects.
     };
 
     var cache = Kache('users');
-    cache.set('User', 'Jason Leveille');
+    cache.set('User', 'Tom Brady');
 
     // wait 3.5 seconds...
     setTimeout(function() {
@@ -89,7 +89,7 @@ There are 4 ways you can define timeouts for cache objects.
 *The Kache constructor also accepts a timeout, which sets a default timeout for any cache instances created within that cache namespace:*
 
     var cache = Kache('users', 5000); // all cache instances will default to a 5 second expiration
-    cache.set('User', 'Jason Leveille');
+    cache.set('User', 'Tom Brady');
 
     // wait 3 seconds...
     setTimeout(function() {
@@ -104,7 +104,7 @@ There are 4 ways you can define timeouts for cache objects.
 *set accepts an optional 3rd parameter indicating the expiration time for a cache object:*
 
     var cache = Kache('users');
-    cache.set('User', 'Jason Leveille', 5000);
+    cache.set('User', 'Tom Brady', 5000);
 
     // wait 3 seconds...
     setTimeout(function() {
@@ -133,11 +133,11 @@ For example, the following cache bucket will have an expiration time of 4 second
     };
 
     var cache = Kache('users', 3000); // Overrides KacheConfig.Timeouts.users
-    cache.set('User', 'Jason Leveille', 4000); // Overrides Kache constructor
+    cache.set('User', 'Tom Brady', 4000); // Overrides Kache constructor
 
     // wait 3.5 seconds...
     setTimeout(function() {
-        alert(cache.get('User')); // Should display Jason Leveille
+        alert(cache.get('User')); // Should display Tom Brady
     }, 3500);
 
     // wait 4.5 seconds...

@@ -1,3 +1,9 @@
+###
+Kache - a cross-browser LocalStorage API
+Copyright: Jason Leveille 2012
+https://github.com/leveille/kache
+License: MIT
+###
 root = exports ? this
 
 __version__ = '0.0.1'

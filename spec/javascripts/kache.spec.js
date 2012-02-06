@@ -187,7 +187,7 @@ if(Kache.Memory !== undefined) {
             });
 
             it("should have expired an entry", function() {
-                waits(150);
+                waits(175);
                 runs(function () {
                     expect(cache.get('foo')).toBeUndefined();
                     expect(cache.get('bar')).toEqual(baz);

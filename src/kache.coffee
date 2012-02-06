@@ -1,8 +1,6 @@
 ###
 Kache - a cross-browser LocalStorage API
-Copyright: Jason Leveille 2012
 https://github.com/leveille/kache
-License: MIT
 ###
 root = exports ? this
 
@@ -31,7 +29,45 @@ root.KacheConfig ?=
 
 root.KacheConfig.Timeouts ?= {}
 
-class Store
+# Yes, Log and Module borrowed from Spine
+Log =
+  trace: true
+  logPrefix: "(Kache)"
+  log: (args...) ->
+    return unless @trace
+    return if typeof console is "undefined"
+    if @logPrefix then args.unshift(@logPrefix)
+    console.log(args...)
+    @
+
+moduleKeywords = ["included", "extended"]
+class Module
+  @include: (obj) ->
+    throw("include(obj) requires obj") unless obj
+    for key, value of obj when key not in moduleKeywords
+      @::[key] = value
+
+    included = obj.included
+    included.apply(this) if included
+    @
+
+  @extend: (obj) ->
+    throw("extend(obj) requires obj") unless obj
+    for key, value of obj when key not in moduleKeywords
+      @[key] = value
+
+    extended = obj.extended
+    extended.apply(this) if extended
+    @
+
+  @proxy: (func) ->
+    => func.apply(@, arguments)
+
+  proxy: (func) ->
+    => func.apply(@, arguments)
+
+class Store extends Module
+  @include Log
   constructor: (@namespace, @timeout, @atts) ->
     if not @_
       throw 'Invalid Cache Instance'
@@ -65,14 +101,14 @@ class Store
     count(@_)
 
   dump: ->
-    console.log @_
+    @.log @_
     @
 
   enabled: ->
     throw "NotImplemented exception"
 
   error: (e)->
-    console.log e
+    @.log e
 
   get: (k) ->
     return unless !!@enabled()
@@ -141,10 +177,6 @@ class MemoryStore extends Store
     root._kache.enabled = false
     @
 
-  @dumpall: ->
-    console.log @store
-    @
-
   @enable: ->
     root._kache.enabled = true
     @
@@ -161,6 +193,7 @@ class MemoryStore extends Store
 
   constructor: (@namespace, @timeout, @atts) ->
     @_ = @store[@namespace] ?= {}
+    @.logPrefix = 'MemoryStore'
     super @namespace, @timeout, @atts
 
   enabled: ->
@@ -199,10 +232,6 @@ class LocalStore extends Store
     localStorage[_enabled_key] = 'false'
     @
 
-  @dumpall: ->
-    console.log @store
-    @
-
   @isEnabled: ->
     !!((localStorage[_enabled_key] and localStorage[_enabled_key] == 'true') \
         or (root.KacheConfig and root.KacheConfig.enabled) \
@@ -220,6 +249,7 @@ class LocalStore extends Store
     if !LocalStore.validStore()
       throw 'LocalStorage is not a valid cache store'
     @_ = JSON.parse @store[@namespace] or '{}'
+    @.logPrefix = 'LocalStore'
     super @namespace, @timeout, @atts
 
   enabled: ->
@@ -227,7 +257,7 @@ class LocalStore extends Store
 
   error: (e)->
     if e == 'QUOTA_EXCEEDED_ERR'
-      console.log 'QUOTA_EXCEEDED_ERR'
+      @.log 'QUOTA_EXCEEDED_ERR'
       @clearExpireds()
     else
       super e

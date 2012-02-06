@@ -91,22 +91,22 @@ describe('Kache', function() {
     });
 
     describe("When expireds cleanup is called", function() {
-        var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
+        var cacheKey, cacheKey2, cacheKey3, cache2, cache3;
         beforeEach(function() {
             Kache.clearStore().enable();
 
-            cacheGuid = Kache.Guid();
-            cache = Kache(cacheGuid, 250);
+            cacheKey = 'aaaa';
+            cache = Kache(cacheKey, 250);
             cache.set('a', 'b', 500);
             cache.set('b', 'c');
             cache.set('c', 'd', 750);
 
-            cacheGuid2 = Kache.Guid();
-            cache2 = Kache(cacheGuid2, 200);
+            cacheKey2 = 'bbbb';
+            cache2 = Kache(cacheKey2, 200);
             cache2.set('a', 'b');
 
-            cacheGuid3 = Kache.Guid();
-            cache3 = Kache(cacheGuid3);
+            cacheKey3 = 'cccc';
+            cache3 = Kache(cacheKey3);
             cache3.set('a', 'b');
         });
 
@@ -187,7 +187,7 @@ if(Kache.Memory !== undefined) {
             });
 
             it("should have expired an entry", function() {
-                waits(110);
+                waits(150);
                 runs(function () {
                     expect(cache.get('foo')).toBeUndefined();
                     expect(cache.get('bar')).toEqual(baz);
@@ -213,23 +213,23 @@ if(Kache.Memory !== undefined) {
         });
 
         describe("When expireds cleanup is called", function() {
-            var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
+            var cacheKey, cacheKey2, cacheKey3, cache2, cache3;
             beforeEach(function() {
                 Kache.Memory.clearStore()
                 Kache.Memory.enable();
 
-                cacheGuid = Kache.Guid();
-                cache = new Kache.Memory(cacheGuid, 250);
+                cacheKey = 'aaaa';
+                cache = new Kache.Memory(cacheKey, 250);
                 cache.set('a', 'b', 500);
                 cache.set('b', 'c');
                 cache.set('c', 'd', 750);
 
-                cacheGuid2 = Kache.Guid();
-                cache2 = new Kache.Memory(cacheGuid2, 200);
+                cacheKey2 = 'bbbb';
+                cache2 = new Kache.Memory(cacheKey2, 200);
                 cache2.set('a', 'b');
 
-                cacheGuid3 = Kache.Guid();
-                cache3 = new Kache.Memory(cacheGuid3);
+                cacheKey3 = 'cccc';
+                cache3 = new Kache.Memory(cacheKey3);
                 cache3.set('a', 'b');
             });
 
@@ -333,22 +333,22 @@ if(Kache.Local !== undefined && !!localStorage) {
         });
 
         describe("When expireds cleanup is called", function() {
-            var cacheGuid, cacheGuid2, cacheGuid3, cache2, cache3;
+            var cacheKey, cacheKey2, cacheKey3, cache2, cache3;
             beforeEach(function() {
                 Kache.Local.clearStore().enable();
 
-                cacheGuid = Kache.Guid();
-                cache = new Kache.Local(cacheGuid, 250);
+                cacheKey = 'aaaa';
+                cache = new Kache.Local(cacheKey, 250);
                 cache.set('a', 'b', 500);
                 cache.set('b', 'c');
                 cache.set('c', 'd', 750);
 
-                cacheGuid2 = Kache.Guid();
-                cache2 = new Kache.Local(cacheGuid2, 200);
+                cacheKey2 = 'bbbb';
+                cache2 = new Kache.Local(cacheKey2, 200);
                 cache2.set('a', 'b');
 
-                cacheGuid3 = Kache.Guid();
-                cache3 = new Kache.Local(cacheGuid3);
+                cacheKey3 = 'cccc';
+                cache3 = new Kache.Local(cacheKey3);
                 cache3.set('a', 'b');
             });
 

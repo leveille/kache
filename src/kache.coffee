@@ -8,13 +8,6 @@ root = exports ? this
 
 __version__ = '0.0.1'
 
-guid =->
-  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
-    r = Math.random() * 16 | 0
-    v = if c is 'x' then r else r & 3 | 8
-    v.toString 16
-  .toUpperCase()
-
 isNumber =(n) ->
   typeof n == 'number' && isFinite(n)
 
@@ -254,7 +247,6 @@ DefaultStore =
 root.Kache = (namespace, timeout, atts) ->
   new DefaultStore(namespace, timeout, atts)
 
-root.Kache.Guid             = guid
 root.Kache.Local            = LocalStore
 root.Kache.Memory           = MemoryStore
 

@@ -147,6 +147,7 @@ For example, the following cache bucket will have an expiration time of 4 second
 
 Contributing
 ------------
+
 Changes should be made to src/kache.coffee and built.  In order you build you to install coffee-script.
 
     $ cake build
@@ -159,4 +160,4 @@ Running tests
 Or, if you have jasmine installed:
 
     $ rake jasmine:ci
-    
+

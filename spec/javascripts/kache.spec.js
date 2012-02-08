@@ -1,3 +1,16 @@
+describe('Kache Build', function() {
+    var version;
+    describe("When kache is built", function() {
+        beforeEach(function () {
+            version = Kache.__version__;
+        });
+
+        it("should have a valid version", function() {
+            expect(version).toMatch(/[0-9]\.[0-9]\.[0-9]/);
+        });
+    });
+});
+
 describe('Kache', function() {
     var cache;
     var enabled = Kache.isEnabled();

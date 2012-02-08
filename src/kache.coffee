@@ -1,10 +1,9 @@
 ###
 Kache - a cross-browser LocalStorage API
 https://github.com/leveille/kache
+Version: {{version}}
 ###
 root = exports ? this
-
-__version__ = '0.0.1'
 
 isNumber =(n) ->
   typeof n == 'number' && isFinite(n)
@@ -23,11 +22,18 @@ count =(obj) ->
     _count++
   _count
 
-root.KacheConfig ?=
+DefaultKacheConfig = {
   enabled: false,
-  defaultTimeout: 0
+  defaultTimeout: 0, # Cache objects will not timeout
+  Timeouts: {}
+}
 
-root.KacheConfig.Timeouts ?= {}
+if root.KacheConfig
+  root.KacheConfig.enabled ?= DefaultKacheConfig.enabled
+  root.KacheConfig.defaultTimeout ?= DefaultKacheConfig.defaultTimeout
+  root.KacheConfig.Timeouts ?= DefaultKacheConfig.Timeouts
+else
+  root.KacheConfig = DefaultKacheConfig
 
 # Yes, Log and Module borrowed from Spine
 Log =
@@ -285,5 +291,4 @@ root.Kache.clearExpireds    = DefaultStore.clearExpireds
 root.Kache.disable          = DefaultStore.disable
 root.Kache.enable           = DefaultStore.enable
 root.Kache.isEnabled        = DefaultStore.isEnabled
-root.Kache.__version__      = __version__
-
+root.Kache.__version__      = '{{version}}'

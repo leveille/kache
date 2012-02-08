@@ -2,17 +2,23 @@
 {spawn} = require 'child_process'
 fs = require 'fs'
 
-build = (callback) ->
-  coffee = spawn 'coffee', ['-c', '-o', 'lib', 'src']
+kacheVersion = ->
+  data = fs.readFileSync "./packages.json"
+  packageData = JSON.parse data
+  packageData.version
+
+build = (watch) ->
+  args = ['-p', 'src/kache.coffee']
+  args.unshift('-w') if watch
+  coffee = spawn 'coffee', args
   coffee.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   coffee.stdout.on 'data', (data) ->
-    print data.toString()
-  coffee.on 'exit', (code) ->
-    callback?() if code is 0
+    _data = data.toString().replace(/{{version}}/gm, kacheVersion())
+    fs.writeFileSync('lib/kache.js', _data);
+    uglify()
 
-uglify = (callback) ->
-  # Gotta be a better way to do this
+uglify = ->
   ug = spawn 'uglifyjs', ['lib/kache.js']
   ug.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
@@ -22,10 +28,8 @@ uglify = (callback) ->
 task 'build', 'Build lib/ from src/', ->
   build()
 
-task 'minify', 'Minify Kache', ->
-  uglify()
+task 'watch', 'Watch src/ for changes and build files', ->
+  watch = true
+  build(watch)
 
-task 'build:all', 'Build lib/ from src/ and minify kache', ->
-  build()
-  uglify()
 

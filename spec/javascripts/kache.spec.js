@@ -14,6 +14,19 @@ describe('Kache Build', function() {
 describe('Kache', function() {
     var cache;
     var enabled = Kache.isEnabled();
+
+    describe("When kache is working", function() {
+        beforeEach(function () {
+            Kache.clearStore().enable();
+            cache = Kache('test');
+            cache.set('foo', 'bar');
+        });
+
+        it("should have a valid toString", function() {
+            expect(cache.toString()).toEqual(cache.namespace + ' : ' + cache.timeout);
+        });
+    });
+
     describe("When kache is enabled/disabled", function() {
         beforeEach(function () {
             Kache.clearStore().enable();
@@ -144,6 +157,18 @@ if(Kache.Memory !== undefined) {
     describe('Kache.Memory', function() {
         var cache;
 
+        describe("When kache is working", function() {
+            beforeEach(function () {
+                Kache.Memory.clearStore().enable();
+                cache = new Kache.Memory('test', 20);
+                cache.set('foo', 'bar');
+            });
+
+            it("should have a valid toString", function() {
+                expect(cache.toString()).toEqual('test : 20');
+            });
+        });
+
         describe("When kache is enabled/disabled", function() {
             beforeEach(function () {
                 Kache.Memory.clearStore().enable();
@@ -267,6 +292,18 @@ if(Kache.Memory !== undefined) {
 if(Kache.Local !== undefined && !!localStorage) {
     describe('Kache.Local', function() {
         var cache;
+
+        describe("When kache is working", function() {
+            beforeEach(function () {
+                Kache.Local.clearStore().enable();
+                cache = new Kache.Local('test', 10);
+                cache.set('foo', 'bar');
+            });
+
+            it("should have a valid toString", function() {
+                expect(cache.toString()).toEqual('test : 10');
+            });
+        });
 
         describe("When kache is enabled/disabled", function() {
             beforeEach(function () {

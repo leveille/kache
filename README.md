@@ -5,6 +5,18 @@ Kache - a Local Storage Utility
 
 Inspired by kizzy (https://github.com/ded/Kizzy), Kache leverages HTML5 localStorage when available and falls back to an in-browser object store when it isn't.
 
+Highlights
+-----
+
+    * Namespaces
+    * Namespace prefix support
+    * Flexible timeouts
+      - global default
+      - per namespace via a config setting
+      - per namespace in Kache constructor
+      - as an optional parameter in set
+    * localStorage with an in-memory fallback
+
 Usage
 -----
 
@@ -56,6 +68,17 @@ Of note, if localStorage is supported, and the Kache store in use is localStorag
                                         // I'm showing it here for illustration purposes.
 
 This variable *WILL OVERRIDE* the enabled value set in KacheConfig.
+
+Namespace Prefixes
+--------
+
+Kache provides the ability to define a prefix for your namespaces.  This is useful, for example, if your site/app needs to support user/role impersonation, etc.  To clarify, if you logout and log back in as another user, you definitely don't want to see the previous cache data.
+
+The following example demonstrates the construction of a global namespace prefix.  You'd likely want this present on every page of your site (and username would be an actual username).
+
+    window.KacheConfig = {
+        namespacePrefix: 'username'
+    };
 
 Timeouts
 --------

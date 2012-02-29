@@ -8,14 +8,10 @@ Inspired by kizzy (https://github.com/ded/Kizzy), Kache leverages HTML5 localSto
 Highlights
 -----
 
-    * Namespaces
-    * Namespace prefix support
-    * Flexible timeouts
-      - global default
-      - per namespace via a config setting
-      - per namespace in Kache constructor
-      - as an optional parameter in set
-    * localStorage with an in-memory fallback
+*  Namespaces
+*  Namespace prefix support
+*  Flexible timeout definitions
+*  localStorage with an in-memory fallback
 
 Usage
 -----

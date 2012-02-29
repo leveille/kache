@@ -1,1 +1,1 @@
-module.exports = require('./lib/locache');
+module.exports = require('./lib/kache');

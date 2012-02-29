@@ -425,6 +425,9 @@ if(window.KacheConfig !== undefined) {
     if(window.KacheConfig.Timeouts !== undefined) {
         _Timeouts = window.KacheConfig.Timeouts;
     }
+    if(window.KacheConfig.namespacePrefix !== undefined) {
+        _NamespacePrefix = window.KacheConfig.namespacePrefix;
+    }
 }
 describe('Kache Config', function() {
     var cache;
@@ -558,6 +561,26 @@ describe('Kache Config', function() {
             cache = Kache('foobar1', 300);
             cache.set('foo', 'bar');
             expect(cache._['foo'].t).toEqual(300);
+        });
+    });
+
+    describe("When a namespace prefix is define", function() {
+        var cache;
+        beforeEach(function () {
+            window.KacheConfig.namespacePrefix = 'myprefix';
+            Kache.clearStore();
+        });
+
+        afterEach(function(){
+            if(_NamespacePrefix !== undefined) {
+                window.KacheConfig.namespacePrefix = _NamespacePrefix;
+            }
+        });
+
+        it("should include the prefix as part of the namespace", function() {
+            cache = Kache('test', 300);
+            cache.set('foo', 'bar');
+            expect(cache.toString()).toEqual('myprefix#test : 300');
         });
     });
 });

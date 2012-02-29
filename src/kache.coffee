@@ -25,12 +25,14 @@ count =(obj) ->
 DefaultKacheConfig = {
   enabled: false,
   defaultTimeout: 0, # Cache objects will not timeout
+  namespacePrefix: '',
   Timeouts: {}
 }
 
 if root.KacheConfig
   root.KacheConfig.enabled ?= DefaultKacheConfig.enabled
   root.KacheConfig.defaultTimeout ?= DefaultKacheConfig.defaultTimeout
+  root.KacheConfig.namespacePrefix ?= DefaultKacheConfig.namespacePrefix
   root.KacheConfig.Timeouts ?= DefaultKacheConfig.Timeouts
 else
   root.KacheConfig = DefaultKacheConfig
@@ -197,6 +199,8 @@ class MemoryStore extends Store
   store: root._kache.store
 
   constructor: (@namespace, @timeout, @atts) ->
+    if root.KacheConfig.namespacePrefix
+      @namespace = root.KacheConfig.namespacePrefix + '#' + @namespace
     @_ = @store[@namespace] ?= {}
     @.logPrefix = 'MemoryStore'
     super @namespace, @timeout, @atts
@@ -253,6 +257,8 @@ class LocalStore extends Store
   constructor: (@namespace, @timeout, @atts) ->
     if !LocalStore.validStore()
       throw 'LocalStorage is not a valid cache store'
+    if root.KacheConfig.namespacePrefix
+      @namespace = root.KacheConfig.namespacePrefix + '#' + @namespace
     @_ = JSON.parse @store[@namespace] or '{}'
     @.logPrefix = 'LocalStore'
     super @namespace, @timeout, @atts

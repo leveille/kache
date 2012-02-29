@@ -149,7 +149,6 @@ class Store extends Module
 
   toString: ->
     "#{@namespace} : #{@timeout}"
-    @
 
   writeThrough: ->
     noop()

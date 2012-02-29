@@ -3,7 +3,7 @@
   "description": "Local cache provider (localStorage or in memory)",
   "contributors" : ["Jason Leveille"],
   "keywords": ["kache", "cache", "local storage", "caching", "expiration"],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Jason Leveille <m@jasonleveille.com> (http://jasonleveille.com)",
   "repository": { 
     "type" : "git", 

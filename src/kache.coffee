@@ -76,9 +76,15 @@ class Module
 
 class Store extends Module
   @include Log
-  constructor: (@namespace, @timeout, @atts) ->
-    if not @_
-      throw 'Invalid Cache Instance'
+  constructor: (kwargs) ->
+    @load @attrs if @attrs
+    @.logPrefix = kwargs.logPrefix if kwargs.logPrefix
+    @namespace = root.KacheConfig.namespacePrefix + '#' + @namespace if root.KacheConfig.namespacePrefix and @disablePrefix != true
+
+    throw 'Cannot load cache store' if not kwargs['load']
+    @_ = kwargs.load()
+    throw 'Invalid Cache Instance' if not @_
+
     if root.KacheConfig
       if root.KacheConfig.Timeouts and root.KacheConfig.Timeouts[@namespace]
         timeout = root.KacheConfig.Timeouts[@namespace]
@@ -87,7 +93,6 @@ class Store extends Module
       else
         timeout = 0
     @timeout ?= timeout
-    @load atts if atts
 
   clear: ->
     @_ = {}
@@ -198,12 +203,11 @@ class MemoryStore extends Store
 
   store: root._kache.store
 
-  constructor: (@namespace, @timeout, @atts) ->
-    if root.KacheConfig.namespacePrefix
-      @namespace = root.KacheConfig.namespacePrefix + '#' + @namespace
-    @_ = @store[@namespace] ?= {}
-    @.logPrefix = 'MemoryStore'
-    super @namespace, @timeout, @atts
+  constructor: (@namespace, @timeout, @attrs) ->
+    kwargs =
+      'load' : @proxy -> @store[@namespace] ?= {}
+      'logPrefix' : 'MemoryStore'
+    super kwargs
 
   enabled: ->
     !!MemoryStore.isEnabled()
@@ -212,11 +216,9 @@ class LocalStore extends Store
   _enabled_key = '_kache_enabled'
 
   @clearStore: ->
-    if localStorage[_enabled_key] != undefined
-      enabled = @isEnabled()
+    enabled = @isEnabled() if localStorage[_enabled_key] != undefined
     localStorage.clear()
-    if enabled != undefined
-      localStorage[_enabled_key] = enabled
+    localStorage[_enabled_key] = enabled if enabled != undefined
     @
 
   @clearExpireds: ->
@@ -254,14 +256,13 @@ class LocalStore extends Store
 
   store: localStorage
 
-  constructor: (@namespace, @timeout, @atts) ->
+  constructor: (@namespace, @timeout, @attrs) ->
     if !LocalStore.validStore()
       throw 'LocalStorage is not a valid cache store'
-    if root.KacheConfig.namespacePrefix
-      @namespace = root.KacheConfig.namespacePrefix + '#' + @namespace
-    @_ = JSON.parse @store[@namespace] or '{}'
-    @.logPrefix = 'LocalStore'
-    super @namespace, @timeout, @atts
+    kwargs =
+      'load' : @proxy -> JSON.parse @store[@namespace] or '{}'
+      'logPrefix' : 'LocalStore'
+    super kwargs
 
   enabled: ->
     !!LocalStore.isEnabled()

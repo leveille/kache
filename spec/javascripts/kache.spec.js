@@ -564,7 +564,7 @@ describe('Kache Config', function() {
         });
     });
 
-    describe("When a namespace prefix is define", function() {
+    describe("When a namespace prefix is defined", function() {
         var cache;
         beforeEach(function () {
             window.KacheConfig.namespacePrefix = 'myprefix';
@@ -581,6 +581,26 @@ describe('Kache Config', function() {
             cache = Kache('test', 300);
             cache.set('foo', 'bar');
             expect(cache.toString()).toEqual('myprefix#test : 300');
+        });
+    });
+
+    describe("When a namespace prefix is defined but prefixing is disabled for namespace", function() {
+        var cache;
+        beforeEach(function () {
+            window.KacheConfig.namespacePrefix = 'myprefix';
+            Kache.clearStore();
+        });
+
+        afterEach(function(){
+            if(_NamespacePrefix !== undefined) {
+                window.KacheConfig.namespacePrefix = _NamespacePrefix;
+            }
+        });
+
+        it("should not include the prefix as part of the namespace", function() {
+            cache = Kache('test', 300, {'disablePrefix': true});
+            cache.set('foo', 'bar');
+            expect(cache.toString()).toEqual('test : 300');
         });
     });
 });

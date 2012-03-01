@@ -122,13 +122,13 @@ describe('Kache', function() {
             Kache.clearStore().enable();
 
             cacheKey = 'aaaa';
-            cache = Kache(cacheKey, 250);
+            cache = Kache(cacheKey, {timeout: 250});
             cache.set('a', 'b', 500);
             cache.set('b', 'c');
             cache.set('c', 'd', 750);
 
             cacheKey2 = 'bbbb';
-            cache2 = Kache(cacheKey2, 200);
+            cache2 = Kache(cacheKey2, {timeout: 200});
             cache2.set('a', 'b');
 
             cacheKey3 = 'cccc';
@@ -140,6 +140,7 @@ describe('Kache', function() {
             waits(300);
             runs(function () {
                 Kache.clearExpireds();
+                console.log(cache);
                 expect(cache.count()).toEqual(2);
                 expect(cache.get('a')).toEqual('b');
                 expect(cache.get('b')).toEqual(undefined);
@@ -160,7 +161,7 @@ if(Kache.Memory !== undefined) {
         describe("When kache is working", function() {
             beforeEach(function () {
                 Kache.Memory.clearStore().enable();
-                cache = new Kache.Memory('test', 20);
+                cache = new Kache.Memory('test', {timeout: 20});
                 cache.set('foo', 'bar');
             });
 
@@ -257,13 +258,13 @@ if(Kache.Memory !== undefined) {
                 Kache.Memory.enable();
 
                 cacheKey = 'aaaa';
-                cache = new Kache.Memory(cacheKey, 250);
+                cache = new Kache.Memory(cacheKey, {timeout: 250});
                 cache.set('a', 'b', 500);
                 cache.set('b', 'c');
                 cache.set('c', 'd', 750);
 
                 cacheKey2 = 'bbbb';
-                cache2 = new Kache.Memory(cacheKey2, 200);
+                cache2 = new Kache.Memory(cacheKey2, {timeout: 200});
                 cache2.set('a', 'b');
 
                 cacheKey3 = 'cccc';
@@ -296,7 +297,7 @@ if(Kache.Local !== undefined && !!localStorage) {
         describe("When kache is working", function() {
             beforeEach(function () {
                 Kache.Local.clearStore().enable();
-                cache = new Kache.Local('test', 10);
+                cache = new Kache.Local('test', {timeout: 10});
                 cache.set('foo', 'bar');
             });
 
@@ -388,13 +389,13 @@ if(Kache.Local !== undefined && !!localStorage) {
                 Kache.Local.clearStore().enable();
 
                 cacheKey = 'aaaa';
-                cache = new Kache.Local(cacheKey, 250);
+                cache = new Kache.Local(cacheKey, {timeout: 250});
                 cache.set('a', 'b', 500);
                 cache.set('b', 'c');
                 cache.set('c', 'd', 750);
 
                 cacheKey2 = 'bbbb';
-                cache2 = new Kache.Local(cacheKey2, 200);
+                cache2 = new Kache.Local(cacheKey2, {timeout: 200});
                 cache2.set('a', 'b');
 
                 cacheKey3 = 'cccc';
@@ -492,7 +493,7 @@ describe('Kache Config', function() {
         });
 
         it("should obtain timeout from constructor", function() {
-            cache = Kache('test', 200);
+            cache = Kache('test', {timeout: 200});
             cache.set('foo', 'bar');
             expect(cache._['foo'].t).toEqual(200);
         });
@@ -552,13 +553,13 @@ describe('Kache Config', function() {
         });
 
         it("should obtain timeout from constructor", function() {
-            cache = Kache('foobar1', 200);
+            cache = Kache('foobar1', {timeout: 200});
             cache.set('foo', 'bar');
             expect(cache._['foo'].t).toEqual(200);
         });
 
         it("should obtain timeout from set", function() {
-            cache = Kache('foobar1', 300);
+            cache = Kache('foobar1', {timeout: 300});
             cache.set('foo', 'bar');
             expect(cache._['foo'].t).toEqual(300);
         });
@@ -578,7 +579,7 @@ describe('Kache Config', function() {
         });
 
         it("should include the prefix as part of the namespace", function() {
-            cache = Kache('test', 300);
+            cache = Kache('test', {timeout: 300});
             cache.set('foo', 'bar');
             expect(cache.toString()).toEqual('myprefix#test : 300');
         });
@@ -598,7 +599,7 @@ describe('Kache Config', function() {
         });
 
         it("should not include the prefix as part of the namespace", function() {
-            cache = Kache('test', 300, {'disablePrefix': true});
+            cache = Kache('test', {timeout: 300, 'disablePrefix': true});
             cache.set('foo', 'bar');
             expect(cache.toString()).toEqual('test : 300');
         });

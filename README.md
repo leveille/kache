@@ -76,6 +76,18 @@ The following example demonstrates the construction of a global namespace prefix
         namespacePrefix: 'username'
     };
 
+You can disable namespace prefixing on a per namespace basis:
+
+    window.KacheConfig = {
+        namespacePrefix: 'prefix'
+    };
+
+    var cache1 = Kache('ns1');
+    alert(cache1.namespace == 'prefix#ns1';
+
+    var cache2 = Kache('ns2', {'disablePrefix': true});
+    alert(cache2.namespace == 'ns2';
+
 Timeouts
 --------
 
@@ -109,7 +121,7 @@ There are 4 ways you can define timeouts for cache objects.
 
 *The Kache constructor also accepts a timeout, which sets a default timeout for any cache instances created within that cache namespace:*
 
-    var cache = Kache('users', 5000); // all cache instances will default to a 5 second expiration
+    var cache = Kache('users', {timeout: 5000}); // all cache instances in this namespace will default to a 5 second expiration
     cache.set('User', 'Tom Brady');
 
     // wait 3 seconds...
@@ -153,7 +165,7 @@ For example, the following cache bucket will have an expiration time of 4 second
         'users': 2000  // Overrides defaultTimeout
     };
 
-    var cache = Kache('users', 3000); // Overrides KacheConfig.Timeouts.users
+    var cache = Kache('users', {timeout: 3000}); // Overrides KacheConfig.Timeouts.users
     cache.set('User', 'Tom Brady', 4000); // Overrides Kache constructor
 
     // wait 3.5 seconds...

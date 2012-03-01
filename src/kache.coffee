@@ -76,13 +76,13 @@ class Module
 
 class Store extends Module
   @include Log
-  constructor: (kwargs) ->
+  constructor: ->
     @load @attrs if @attrs
-    @.logPrefix = kwargs.logPrefix if kwargs.logPrefix
+    @.logPrefix = @logPrefix if @logPrefix
     @namespace = root.KacheConfig.namespacePrefix + '#' + @namespace if root.KacheConfig.namespacePrefix and @disablePrefix != true
 
-    throw 'Cannot load cache store' if not kwargs['load']
-    @_ = kwargs.load()
+    throw 'Cannot load cache store' if not @load
+    @_ = @load()
     throw 'Invalid Cache Instance' if not @_
 
     if root.KacheConfig
@@ -203,11 +203,10 @@ class MemoryStore extends Store
 
   store: root._kache.store
 
-  constructor: (@namespace, @timeout, @attrs) ->
-    kwargs =
-      'load' : @proxy -> @store[@namespace] ?= {}
-      'logPrefix' : 'MemoryStore'
-    super kwargs
+  constructor: (@namespace, @attrs = {}) ->
+    @attrs['load'] = @proxy -> @store[@namespace] ?= {}
+    @attrs['logPrefix'] = 'MemoryStore'
+    super
 
   enabled: ->
     !!MemoryStore.isEnabled()
@@ -256,13 +255,12 @@ class LocalStore extends Store
 
   store: localStorage
 
-  constructor: (@namespace, @timeout, @attrs) ->
+  constructor: (@namespace, @attrs = {}) ->
     if !LocalStore.validStore()
       throw 'LocalStorage is not a valid cache store'
-    kwargs =
-      'load' : @proxy -> JSON.parse @store[@namespace] or '{}'
-      'logPrefix' : 'LocalStore'
-    super kwargs
+    @attrs['load'] = @proxy -> JSON.parse @store[@namespace] or '{}'
+    @attrs['logPrefix'] = 'LocalStore'
+    super
 
   enabled: ->
     !!LocalStore.isEnabled()

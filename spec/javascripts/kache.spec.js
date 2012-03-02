@@ -140,7 +140,6 @@ describe('Kache', function() {
             waits(300);
             runs(function () {
                 Kache.clearExpireds();
-                console.log(cache);
                 expect(cache.count()).toEqual(2);
                 expect(cache.get('a')).toEqual('b');
                 expect(cache.get('b')).toEqual(undefined);
@@ -469,8 +468,19 @@ describe('Kache Config', function() {
             }
         });
 
-        it("should be disabled", function() {
+        it("should be enabled", function() {
             expect(Kache.isEnabled()).toEqual(true);
+        });
+
+        it("if enabled in KacheConfig but explicitly disabled it should be disabled", function() {
+            Kache.disable();
+            expect(Kache.isEnabled()).toEqual(false);
+
+            Kache.Local.disable();
+            expect(Kache.Local.isEnabled()).toEqual(false);
+
+            Kache.Memory.disable();
+            expect(Kache.Memory.isEnabled()).toEqual(false);
         });
     });
 
@@ -478,6 +488,7 @@ describe('Kache Config', function() {
         beforeEach(function () {
             window.KacheConfig.defaultTimeout = 100;
             Kache.clearStore();
+            Kache.enable();
         });
 
         afterEach(function(){

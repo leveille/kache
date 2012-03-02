@@ -194,6 +194,7 @@ class MemoryStore extends Store
     @
 
   @isEnabled: ->
+    return false if root._kache and root._kache.enabled == false
     !!((root._kache and root._kache.enabled) \
         or (root.KacheConfig and root.KacheConfig.enabled) \
         or false)
@@ -243,6 +244,7 @@ class LocalStore extends Store
     @
 
   @isEnabled: ->
+    return false if localStorage[_enabled_key] and localStorage[_enabled_key] == 'false'
     !!((localStorage[_enabled_key] and localStorage[_enabled_key] == 'true') \
         or (root.KacheConfig and root.KacheConfig.enabled) \
         or false)
@@ -284,8 +286,8 @@ DefaultStore =
   else
     MemoryStore
 
-root.Kache = (namespace, timeout, atts) ->
-  new DefaultStore(namespace, timeout, atts)
+root.Kache = (namespace, attrs) ->
+  new DefaultStore(namespace, attrs)
 
 root.Kache.Local            = LocalStore
 root.Kache.Memory           = MemoryStore

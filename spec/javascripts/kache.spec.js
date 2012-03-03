@@ -160,7 +160,7 @@ if(Kache.Memory !== undefined) {
         describe("When kache is working", function() {
             beforeEach(function () {
                 Kache.Memory.clearStore().enable();
-                cache = new Kache.Memory('test', {timeout: 20});
+                cache = Kache.Memory('test', {timeout: 20});
                 cache.set('foo', 'bar');
             });
 
@@ -172,7 +172,7 @@ if(Kache.Memory !== undefined) {
         describe("When kache is enabled/disabled", function() {
             beforeEach(function () {
                 Kache.Memory.clearStore().enable();
-                cache = new Kache.Memory('test');
+                cache = Kache.Memory('test');
                 cache.set('foo', 'bar', 10);
             });
 
@@ -197,7 +197,7 @@ if(Kache.Memory !== undefined) {
             var bar, baz;
             beforeEach(function () {
                 Kache.Memory.clearStore().enable();
-                cache = new Kache.Memory('test');
+                cache = Kache.Memory('test');
                 bar = cache.set('foo', 'bar', 100);
                 baz = cache.set('bar', 'baz', 200);
             });
@@ -257,17 +257,17 @@ if(Kache.Memory !== undefined) {
                 Kache.Memory.enable();
 
                 cacheKey = 'aaaa';
-                cache = new Kache.Memory(cacheKey, {timeout: 250});
+                cache = Kache.Memory(cacheKey, {timeout: 250});
                 cache.set('a', 'b', 500);
                 cache.set('b', 'c');
                 cache.set('c', 'd', 750);
 
                 cacheKey2 = 'bbbb';
-                cache2 = new Kache.Memory(cacheKey2, {timeout: 200});
+                cache2 = Kache.Memory(cacheKey2, {timeout: 200});
                 cache2.set('a', 'b');
 
                 cacheKey3 = 'cccc';
-                cache3 = new Kache.Memory(cacheKey3);
+                cache3 = Kache.Memory(cacheKey3);
                 cache3.set('a', 'b');
             });
 
@@ -296,7 +296,7 @@ if(Kache.Local !== undefined && !!localStorage) {
         describe("When kache is working", function() {
             beforeEach(function () {
                 Kache.Local.clearStore().enable();
-                cache = new Kache.Local('test', {timeout: 10});
+                cache = Kache.Local('test', {timeout: 10});
                 cache.set('foo', 'bar');
             });
 
@@ -308,7 +308,7 @@ if(Kache.Local !== undefined && !!localStorage) {
         describe("When kache is enabled/disabled", function() {
             beforeEach(function () {
                 Kache.Local.clearStore().enable();
-                cache = new Kache.Local('test');
+                cache = Kache.Local('test');
                 cache.set('foo', 'bar', 10);
             });
 
@@ -333,7 +333,7 @@ if(Kache.Local !== undefined && !!localStorage) {
             var bar, baz;
             beforeEach(function () {
                 Kache.Local.clearStore().enable();
-                cache = new Kache.Local('test');
+                cache = Kache.Local('test');
                 bar = cache.set('foo', 'bar', 100);
                 baz = cache.set('bar', 'baz', 200);
             });
@@ -388,17 +388,17 @@ if(Kache.Local !== undefined && !!localStorage) {
                 Kache.Local.clearStore().enable();
 
                 cacheKey = 'aaaa';
-                cache = new Kache.Local(cacheKey, {timeout: 250});
+                cache = Kache.Local(cacheKey, {timeout: 250});
                 cache.set('a', 'b', 500);
                 cache.set('b', 'c');
                 cache.set('c', 'd', 750);
 
                 cacheKey2 = 'bbbb';
-                cache2 = new Kache.Local(cacheKey2, {timeout: 200});
+                cache2 = Kache.Local(cacheKey2, {timeout: 200});
                 cache2.set('a', 'b');
 
                 cacheKey3 = 'cccc';
-                cache3 = new Kache.Local(cacheKey3);
+                cache3 = Kache.Local(cacheKey3);
                 cache3.set('a', 'b');
             });
 
@@ -613,23 +613,6 @@ describe('Kache Config', function() {
             cache = Kache('test', {timeout: 300, 'disablePrefix': true});
             cache.set('foo', 'bar');
             expect(cache.toString()).toEqual('test : 300');
-        });
-    });
-
-    describe("When store type is explicitly requested during contructor call", function() {
-        var cache;
-        beforeEach(function () {
-            Kache.clearStore();
-        });
-
-        it("should include the prefix as part of the namespace", function() {
-            cache1 = Kache('test1', {store: 'memory'});
-            expect(cache1.type).toEqual('MemoryStore');
-
-            if(!!localStorage) {
-                cache2 = Kache('test2', {store: 'local'});
-                expect(cache2.type).toEqual('LocalStore');
-            }
         });
     });
 });

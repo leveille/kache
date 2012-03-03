@@ -288,25 +288,32 @@ DefaultStore =
     MemoryStore
 
 root.Kache = (namespace, attrs) ->
-  if attrs and 'store' of attrs
-    switch attrs['store'].toLowerCase()
-      when 'local'
-        if LocalStore.validStore()
-          _Store = LocalStore
-        else
-          throw 'localStorage is not supported'
-      when 'memory' then _Store = MemoryStore
-      else throw 'Invalid Store Type.  Valid options include: {store: "local|memory"}'
-  else
-    _Store = DefaultStore
-  new _Store(namespace, attrs)
+  new DefaultStore(namespace, attrs)
 
-root.Kache.Local            = LocalStore
-root.Kache.Memory           = MemoryStore
+root.Kache.Local = (namespace, attrs) ->
+  new LocalStore(namespace, attrs)
 
-root.Kache.clearStore       = DefaultStore.clearStore
-root.Kache.clearExpireds    = DefaultStore.clearExpireds
-root.Kache.disable          = DefaultStore.disable
-root.Kache.enable           = DefaultStore.enable
-root.Kache.isEnabled        = DefaultStore.isEnabled
-root.Kache.__version__      = '{{version}}'
+root.Kache.Memory = (namespace, attrs) ->
+  new MemoryStore(namespace, attrs)
+
+root.Kache.clearStore             = DefaultStore.clearStore
+root.Kache.Local.clearStore       = LocalStore.clearStore
+root.Kache.Memory.clearStore      = MemoryStore.clearStore
+
+root.Kache.clearExpireds          = DefaultStore.clearExpireds
+root.Kache.Local.clearExpireds    = LocalStore.clearExpireds
+root.Kache.Memory.clearExpireds   = MemoryStore.clearExpireds
+
+root.Kache.disable                = DefaultStore.disable
+root.Kache.Local.disable          = LocalStore.disable
+root.Kache.Memory.disable         = MemoryStore.disable
+
+root.Kache.enable                 = DefaultStore.enable
+root.Kache.Local.enable           = LocalStore.enable
+root.Kache.Memory.enable          = MemoryStore.enable
+
+root.Kache.isEnabled              = DefaultStore.isEnabled
+root.Kache.Local.isEnabled        = LocalStore.isEnabled
+root.Kache.Memory.isEnabled       = MemoryStore.isEnabled
+
+root.Kache.__version__            = '{{version}}'

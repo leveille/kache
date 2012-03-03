@@ -74,15 +74,10 @@ By default, Kache will use localStorage if available and fall back to an in memo
     alert(cache.type == 'LocalStore'); // if localStorage is available
     alert(cache.type == 'MemoryStore'); // if localStorage is NOT available
 
-You can explictly request a specific store in one of 2 ways:
+You can also explictly request a specific store:
 
-    cache = new Kache.Memory('test');
-    // is the same as
-    cache = Kache('test', {store: 'memory'});
-
-    cache = new Kache.Local('test');
-    // is the same as
-    cache = Kache('test', {store: 'local'});
+    cache = Kache.Memory('test');
+    cache = Kache.Local('test');
 
 Namespace Prefixes
 --------

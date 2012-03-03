@@ -77,7 +77,9 @@ By default, Kache will use localStorage if available and fall back to an in memo
 You can also explictly request a specific store:
 
     cache = Kache.Memory('test');
+    alert(cache.type == 'MemoryStore');    
     cache = Kache.Local('test');
+    alert(cache.type == 'LocalStore');
 
 Namespace Prefixes
 --------

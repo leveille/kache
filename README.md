@@ -70,7 +70,7 @@ Explicit cache store request
 
 By default, Kache will use localStorage if available and fall back to an in memory store.
 
-    cache = new Kache('test');
+    cache = Kache('test');
     alert(cache.type == 'LocalStore'); // if localStorage is available
     alert(cache.type == 'MemoryStore'); // if localStorage is NOT available
 

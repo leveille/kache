@@ -65,6 +65,25 @@ Of note, if localStorage is supported, and the Kache store in use is localStorag
 
 This variable *WILL OVERRIDE* the enabled value set in KacheConfig.
 
+Explicit cache store request
+------------------------
+
+By default, Kache will use localStorage if available and fall back to an in memory store.
+
+    cache = new Kache('test');
+    alert(cache.type == 'LocalStore'); // if localStorage is available
+    alert(cache.type == 'MemoryStore'); // if localStorage is NOT available
+
+You can explictly request a specific store in one of 2 ways:
+
+    cache = new Kache.Memory('test');
+    // is the same as
+    cache = Kache('test', {store: 'memory'});
+
+    cache = new Kache.Local('test');
+    // is the same as
+    cache = Kache('test', {store: 'local'});
+
 Namespace Prefixes
 --------
 

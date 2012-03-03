@@ -207,6 +207,7 @@ class MemoryStore extends Store
   constructor: (@namespace, @attrs = {}) ->
     @attrs['load'] = @proxy -> @store[@namespace] ?= {}
     @attrs['logPrefix'] = 'MemoryStore'
+    @attrs['type'] = 'MemoryStore'
     super
 
   enabled: ->
@@ -262,6 +263,7 @@ class LocalStore extends Store
       throw 'LocalStorage is not a valid cache store'
     @attrs['load'] = @proxy -> JSON.parse @store[@namespace] or '{}'
     @attrs['logPrefix'] = 'LocalStore'
+    @attrs['type'] = 'LocalStore'
     super
 
   enabled: ->
@@ -279,7 +281,6 @@ class LocalStore extends Store
     @store[@namespace] = JSON.stringify @_
     @
 
-
 DefaultStore =
   if LocalStore.validStore()
     LocalStore
@@ -287,7 +288,18 @@ DefaultStore =
     MemoryStore
 
 root.Kache = (namespace, attrs) ->
-  new DefaultStore(namespace, attrs)
+  if attrs and 'store' of attrs
+    switch attrs['store'].toLowerCase()
+      when 'local'
+        if LocalStore.validStore()
+          _Store = LocalStore
+        else
+          throw 'localStorage is not supported'
+      when 'memory' then _Store = MemoryStore
+      else throw 'Invalid Store Type.  Valid options include: {store: "local|memory"}'
+  else
+    _Store = DefaultStore
+  new _Store(namespace, attrs)
 
 root.Kache.Local            = LocalStore
 root.Kache.Memory           = MemoryStore

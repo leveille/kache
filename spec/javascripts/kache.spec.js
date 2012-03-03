@@ -615,4 +615,21 @@ describe('Kache Config', function() {
             expect(cache.toString()).toEqual('test : 300');
         });
     });
+
+    describe("When store type is explicitly requested during contructor call", function() {
+        var cache;
+        beforeEach(function () {
+            Kache.clearStore();
+        });
+
+        it("should include the prefix as part of the namespace", function() {
+            cache1 = Kache('test1', {store: 'memory'});
+            expect(cache1.type).toEqual('MemoryStore');
+
+            if(!!localStorage) {
+                cache2 = Kache('test2', {store: 'local'});
+                expect(cache2.type).toEqual('LocalStore');
+            }
+        });
+    });
 });

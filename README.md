@@ -197,8 +197,13 @@ For example, the following cache bucket will have an expiration time of 4 second
 Contributing
 ------------
 
-Changes should be made to src/kache.coffee and built.  In order you build you to install coffee-script.
+Changes should be made to src/kache.coffee and built.  In order to build you'll need to install CoffeeScript.
 
+    $ npm install -g coffee-script
+
+Leave off the `-g` if you don't wish to install globally.
+    
+    $ cd /path/to/kache
     $ cake build
 
 Running tests

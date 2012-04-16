@@ -2,36 +2,18 @@
 {spawn} = require 'child_process'
 fs = require 'fs'
 
-kacheVersion = ->
-  data = fs.readFileSync "./packages.json"
-  packageData = JSON.parse data
-  packageData.version
-
-build = (watch) ->
-  args = ['-p', 'src/kache.coffee']
-  args.unshift('-w') if watch
-  coffee = spawn 'coffee', args
+task 'build', 'Build lib/ from src/', ->
+  coffee = spawn 'coffee', ['-c', '-o', 'lib', 'src']
   coffee.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
   coffee.stdout.on 'data', (data) ->
-    _data = data.toString().replace(/{{version}}/gm, kacheVersion())
-    fs.writeFileSync('lib/kache.js', _data);
-    _publicIndexData = fs.readFileSync('public/index.html')
-    fs.writeFileSync('public/index.html', _publicIndexData.toString().replace(/{{version}}/gm, kacheVersion()));
-    uglify()
+    print data.toString()
+  coffee.on 'exit', (code) ->
+    callback?() if code is 0
 
-uglify = ->
-  ug = spawn 'uglifyjs', ['lib/kache.js']
-  ug.stderr.on 'data', (data) ->
+task 'watch', 'Watch src/ for changes', ->
+  coffee = spawn 'coffee', ['-w', '-c', '-o', 'lib', 'src']
+  coffee.stderr.on 'data', (data) ->
     process.stderr.write data.toString()
-  ug.stdout.on 'data', (data) ->
-    fs.writeFile('lib/kache.min.js', data.toString());
-
-task 'build', 'Build lib/ from src/', ->
-  build()
-
-task 'watch', 'Watch src/ for changes and build files', ->
-  watch = true
-  build(watch)
-
-
+  coffee.stdout.on 'data', (data) ->
+    print data.toString()

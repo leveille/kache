@@ -1,8 +1,3 @@
-###
-Kache - a cross-browser LocalStorage API
-https://github.com/leveille/kache
-Version: {{version}}
-###
 root = exports ? this
 
 isNumber =(n) ->
@@ -174,7 +169,7 @@ class MemoryStore extends Store
       for ns, item of obj
         if isExpired item
           hasDeleted = true
-          delete item
+          item = undefined
       if hasDeleted
         @store[key] = obj
         if count(@store[key]) == 0
@@ -227,10 +222,10 @@ class LocalStore extends Store
       for k, item of JSON.parse value
         if isExpired item
           hasDeleted = true
-          delete item
+          item = undefined
         if hasDeleted
           if count(value) == 0
-            delete value
+            value = undefined
             return
         value ?= {}
         @store[key] = JSON.stringify value
@@ -316,4 +311,4 @@ root.Kache.isEnabled              = DefaultStore.isEnabled
 root.Kache.Local.isEnabled        = LocalStore.isEnabled
 root.Kache.Memory.isEnabled       = MemoryStore.isEnabled
 
-root.Kache.__version__            = '{{version}}'
+root.Kache.__version__            = '0.1.0'

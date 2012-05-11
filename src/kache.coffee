@@ -296,31 +296,31 @@ root.Kache.Memory.clearStore      = MemoryStore.clearStore
 root.Kache.clearStore             = ->
   LocalStore.clearStore()
   MemoryStore.clearStore()
-  DefaultStore
+  ''
 
 root.Kache.Local.clearExpireds    = LocalStore.clearExpireds
 root.Kache.Memory.clearExpireds   = MemoryStore.clearExpireds
 root.Kache.clearExpireds          = ->
   LocalStore.clearExpireds()
   MemoryStore.clearExpireds()
-  DefaultStore
+  ''
 
 root.Kache.Local.disable          = LocalStore.disable
 root.Kache.Memory.disable         = MemoryStore.disable
 root.Kache.disable                = ->
   LocalStore.disable()
   MemoryStore.disable()
-  DefaultStore
+  !(LocalStore.isEnabled() and MemoryStore.isEnabled())
 
 root.Kache.Local.enable           = LocalStore.enable
 root.Kache.Memory.enable          = MemoryStore.enable
 root.Kache.enable                 = ->
   LocalStore.enable()
   MemoryStore.enable()
-  DefaultStore
+  LocalStore.isEnabled() and MemoryStore.isEnabled()
 
 root.Kache.isEnabled              = DefaultStore.isEnabled
 root.Kache.Local.isEnabled        = LocalStore.isEnabled
 root.Kache.Memory.isEnabled       = MemoryStore.isEnabled
 
-root.Kache.__version__            = '0.1.1'
+root.Kache.__version__            = '0.1.2'

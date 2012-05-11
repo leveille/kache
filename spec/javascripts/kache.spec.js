@@ -17,7 +17,8 @@ describe('Kache', function() {
 
     describe("When kache is working", function() {
         beforeEach(function () {
-            Kache.clearStore().enable();
+            Kache.clearStore();
+            Kache.enable();
             cache = Kache('test');
             cache.set('foo', 'bar');
         });
@@ -74,7 +75,8 @@ describe('Kache', function() {
     describe("When js cache items are set", function() {
         var set1, set2;
         beforeEach(function () {
-            Kache.clearStore().enable();
+            Kache.clearStore();
+            Kache.enable();
             cache = Kache('test');
             set1 = cache.set('foo', 'bar', 100);
             set2 = cache.set('bar', 'baz', 200);
@@ -131,7 +133,8 @@ describe('Kache', function() {
     describe("When expireds cleanup is called", function() {
         var cacheKey, cacheKey2, cacheKey3, cache2, cache3;
         beforeEach(function() {
-            Kache.clearStore().enable();
+            Kache.clearStore();
+            Kache.enable();
 
             cacheKey = 'aaaa';
             cache = Kache(cacheKey, {timeout: 250});

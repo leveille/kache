@@ -27,35 +27,47 @@ describe('Kache', function() {
         });
     });
 
-    describe("When kache is enabled/disabled", function() {
+    describe("When kache is enabled", function() {
         beforeEach(function () {
-            Kache.clearStore().enable();
+            Kache.clearStore();
+            Kache.enable();
             cache = Kache('test');
             cache.set('foo', 'bar');
         });
 
         it("should be enabled", function() {
             expect(Kache.isEnabled()).toEqual(true);
+            expect(Kache.Local.isEnabled()).toEqual(true);
+            expect(Kache.Memory.isEnabled()).toEqual(true);
         });
 
         it("should return value when enabled", function() {
             expect(cache.get('foo')).toBe('bar');
         });
 
-        it("should be disabled", function() {
-            Kache.disable();
-            expect(Kache.isEnabled()).toEqual(false);
-        });
-
-        it("should return  null when disabled", function() {
-            Kache.disable();
-            expect(cache.get('foo')).toEqual(null);
-        });
-
         it("should retain enabled value when store is cleared", function() {
             var enabled = Kache.isEnabled();
             Kache.clearStore();
             expect(enabled).toEqual(Kache.isEnabled());
+        });
+    });
+
+    describe("When kache is disabled", function() {
+        beforeEach(function () {
+            Kache.clearStore();
+            Kache.disable();
+            cache = Kache('test');
+            cache.set('foo', 'bar');
+        });
+
+        it("should be disabled", function() {
+            expect(Kache.isEnabled()).toEqual(false);
+            expect(Kache.Local.isEnabled()).toEqual(false);
+            expect(Kache.Memory.isEnabled()).toEqual(false);
+        });
+
+        it("should return  null when disabled", function() {
+            expect(cache.get('foo')).toEqual(null);
         });
     });
 
@@ -506,13 +518,13 @@ describe('Kache Config', function() {
         it("should obtain timeout from constructor", function() {
             cache = Kache('test', {timeout: 200});
             cache.set('foo', 'bar');
-            expect(cache._['foo'].t).toEqual(200);
+            expect(cache._.foo.t).toEqual(200);
         });
 
         it("should obtain timeout from set call", function() {
             cache = Kache('test');
             cache.set('foo', 'bar', 300);
-            expect(cache._['foo'].t).toEqual(300);
+            expect(cache._.foo.t).toEqual(300);
         });
     });
 
@@ -538,29 +550,13 @@ describe('Kache Config', function() {
             cache2 = Kache('foobar2');
             cache3 = Kache('foobar3');
 
-            cache.set('1111', '1111');
-            expect(cache._['1111'].t).toEqual(100);
-            expect(cache.get('1111')).toEqual('1111');
+            cache.set('foo', 'bar');
+            cache2.set('bar', 'baz');
+            cache3.set('baz', 'bat');
 
-            setTimeout(function() {
-                expect(cache.get('1111')).toEqual(undefined);
-            }, 150);
-
-            cache2.set('2222', '2222');
-            expect(cache2._['2222'].t).toEqual(200);
-            expect(cache2.get('2222')).toEqual('2222');
-
-            setTimeout(function() {
-                expect(cache2.get('2222')).toEqual(undefined);
-            }, 250);
-
-            cache3.set('3333', '3333');
-            expect(cache3._['3333'].t).toEqual(300);
-            expect(cache3.get('3333')).toEqual('3333');
-
-            setTimeout(function() {
-                expect(cache3.get('3333')).toEqual(undefined);
-            }, 350);
+            expect(cache._['foo'].t).toEqual(100);
+            expect(cache2._['bar'].t).toEqual(200);
+            expect(cache3._['baz'].t).toEqual(300);
         });
 
         it("should obtain timeout from constructor", function() {

@@ -16,7 +16,6 @@ Highlights
 Usage
 -----
 
-```
     var cache = Kache('users');
     var user = cache.get('User');
     if (user) {
@@ -24,7 +23,6 @@ Usage
     } else {
         cache.set('User', 'Tom Brady');
     }
-```
 
 Calling 'set' will return the cache value.
 

@@ -108,7 +108,7 @@ The following example demonstrates the construction of a global namespace prefix
 window.KacheConfig = {
     namespacePrefix: 'username'
 };
-```javascript
+```
 
 You can disable namespace prefixing on a per namespace basis:
 

@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Kache by leveille</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Kache</h1>
+        <p>A local cache utility</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/leveille/kache" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/leveille/kache/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/leveille/kache/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <p><a href="http://travis-ci.org/#!/leveille/kache"><img src="https://secure.travis-ci.org/leveille/kache.png"></a></p>
+
+<p>Inspired by kizzy (<a href="https://github.com/ded/Kizzy">https://github.com/ded/Kizzy</a>), Kache leverages HTML5 localStorage when available and falls back to an in-browser object store when it isn't.</p>
+
+<h2>Highlights</h2>
+
+<ul>
+<li> Namespaces</li>
+<li> Namespace prefix support</li>
+<li> Flexible timeout definitions</li>
+<li> localStorage with an in-memory fallback</li>
+</ul><h2>Usage</h2>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">user</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Calling 'set' will return the cache value.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">user</span> <span class="o">=</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">)</span> <span class="o">||</span> <span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">);</span>
+</pre></div>
+
+<h2>Kache Configuration</h2>
+
+<p>Kache will look for the existance of a KacheConfig global during setup.  Here you can define an enabled status as well as a default cache object timeout:</p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">enabled</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nx">defaultTimeout</span><span class="o">:</span> <span class="mi">0</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>Kache will also look for the existance of a Timeouts object.  In the event that you want to sync/stagger cache timeouts for multiple cache layers (grid/web server/etc), you can define your default namespaced cache timeouts:</p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span><span class="p">.</span><span class="nx">Timeouts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'first_namespace'</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span>  <span class="c1">// 3 second default timeout for any cache object in the 'first_namespace' namespace</span>
+    <span class="s1">'second_namespace'</span><span class="o">:</span> <span class="mi">4000</span>  <span class="c1">// 4 second default timeout</span>
+<span class="p">};</span>
+</pre></div>
+
+<h2>Enabling/Disabling Kache</h2>
+
+<p>You can control whether or not Kache is enabled via the 'enabled' option in KacheConfig.  You can override this setting by explicitly enabling or disabling Kache:</p>
+
+<div class="highlight"><pre><span class="nx">Kache</span><span class="p">.</span><span class="nx">enable</span><span class="p">();</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">Kache</span><span class="p">.</span><span class="nx">isEnabled</span><span class="p">());</span> <span class="c1">// true</span>
+
+<span class="nx">Kache</span><span class="p">.</span><span class="nx">disable</span><span class="p">();</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">Kache</span><span class="p">.</span><span class="nx">isEnabled</span><span class="p">());</span> <span class="c1">// false</span>
+</pre></div>
+
+<p>Of note, if localStorage is supported, and the Kache store in use is localStorage, enabling kache via <code>Kache.enable()</code> will set a localStorage variable indicating the enabled/disabled status.  This variable will allow you to retain the status between page requests (which should ease testing).</p>
+
+<div class="highlight"><pre><span class="nx">Kache</span><span class="p">.</span><span class="nx">enable</span><span class="p">();</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">localStorage</span><span class="p">.</span><span class="nx">_kache_enabled</span><span class="p">);</span> <span class="c1">// This variable is subject to change.</span>
+                                        <span class="c1">// I'm showing it here for illustration purposes.</span>
+</pre></div>
+
+<p>This variable <em>WILL OVERRIDE</em> the enabled value set in KacheConfig.</p>
+
+<h2>Explicit cache store request</h2>
+
+<p>By default, Kache will use localStorage if available and fall back to an in memory store.</p>
+
+<div class="highlight"><pre><span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'test'</span><span class="p">);</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s1">'LocalStore'</span><span class="p">);</span> <span class="c1">// if localStorage is available</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s1">'MemoryStore'</span><span class="p">);</span> <span class="c1">// if localStorage is NOT available</span>
+</pre></div>
+
+<p>You can also explictly request a specific store:</p>
+
+<div class="highlight"><pre><span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">.</span><span class="nx">Memory</span><span class="p">(</span><span class="s1">'test'</span><span class="p">);</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s1">'MemoryStore'</span><span class="p">);</span>    
+<span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">.</span><span class="nx">Local</span><span class="p">(</span><span class="s1">'test'</span><span class="p">);</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s1">'LocalStore'</span><span class="p">);</span>
+</pre></div>
+
+<h2>Namespace Prefixes</h2>
+
+<p>Kache provides the ability to define a prefix for your namespaces.  This is useful, for example, if your site/app needs to support user/role impersonation, etc.  To clarify, if you logout and log back in as another user, you definitely don't want to see the previous cache data.</p>
+
+<p>The following example demonstrates the construction of a global namespace prefix.  You'd likely want this present on every page of your site (and username would be an actual username).</p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">namespacePrefix</span><span class="o">:</span> <span class="s1">'username'</span>
+<span class="p">};</span>
+</pre></div>
+
+<p>You can disable namespace prefixing on a per namespace basis:</p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">namespacePrefix</span><span class="o">:</span> <span class="s1">'prefix'</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">cache1</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'ns1'</span><span class="p">);</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">cache1</span><span class="p">.</span><span class="nx">namespace</span> <span class="o">==</span> <span class="s1">'prefix#ns1'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">cache2</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'ns2'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'disablePrefix'</span><span class="o">:</span> <span class="kc">true</span><span class="p">});</span>
+<span class="nx">alert</span><span class="p">(</span><span class="nx">cache2</span><span class="p">.</span><span class="nx">namespace</span> <span class="o">==</span> <span class="s1">'ns2'</span><span class="p">;</span>
+</pre></div>
+
+<h2>Timeouts</h2>
+
+<p>There are 4 ways you can define timeouts for cache objects.</p>
+
+<p><em>By defining a global defaultTimeout (see KacheConfig variable):</em></p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span><span class="p">.</span><span class="nx">defaultTimeout</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">;</span> <span class="c1">// Sets default object timeout of 3 seconds</span>
+
+<span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">);</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">);</span>
+
+<span class="c1">// wait 3.5 seconds...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">));</span> <span class="c1">// Should have timed out</span>
+<span class="p">},</span> <span class="mi">3500</span><span class="p">);</span>
+</pre></div>
+
+<p><em>By defining a Kache namespace timeout via the Timeouts config:</em></p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span><span class="p">.</span><span class="nx">Timeouts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'users'</span><span class="o">:</span> <span class="mi">3000</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">);</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">);</span>
+
+<span class="c1">// wait 3.5 seconds...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">));</span> <span class="c1">// Should have timed out</span>
+<span class="p">},</span> <span class="mi">3500</span><span class="p">);</span>
+</pre></div>
+
+<p><em>The Kache constructor also accepts a timeout, which sets a default timeout for any cache instances created within that cache namespace:</em></p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">,</span> <span class="p">{</span><span class="nx">timeout</span><span class="o">:</span> <span class="mi">5000</span><span class="p">});</span> <span class="c1">// all cache instances in this namespace will default to a 5 second expiration</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">);</span>
+
+<span class="c1">// wait 3 seconds...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">));</span>
+<span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
+
+<span class="c1">// 6 seconds later...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="o">?</span> <span class="s1">'Expired'</span> <span class="o">:</span> <span class="s1">'Still Alive'</span><span class="p">)</span>
+<span class="p">},</span> <span class="mi">6000</span><span class="p">);</span>
+</pre></div>
+
+<p><em>set accepts an optional 3rd parameter indicating the expiration time for a cache object:</em></p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">);</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">,</span> <span class="mi">5000</span><span class="p">);</span>
+
+<span class="c1">// wait 3 seconds...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">));</span>
+<span class="p">},</span> <span class="mi">3000</span><span class="p">);</span>
+
+<span class="c1">// 6 seconds later...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="o">?</span> <span class="s1">'Expired'</span> <span class="o">:</span> <span class="s1">'Still Alive'</span><span class="p">)</span>
+<span class="p">},</span> <span class="mi">6000</span><span class="p">);</span>
+</pre></div>
+
+<h3>Timeout Override order</h3>
+
+<p>Cache timeouts are listed here, in the order of precedence:</p>
+
+<ol>
+<li>set</li>
+<li>Kache Constructor</li>
+<li>KacheConfig.Timeouts</li>
+<li>KacheConfig.defaultTimeout</li>
+</ol><p>For example, the following cache bucket will have an expiration time of 4 seconds:</p>
+
+<div class="highlight"><pre><span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span><span class="p">.</span><span class="nx">defaultTimeout</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">KacheConfig</span><span class="p">.</span><span class="nx">Timeouts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'users'</span><span class="o">:</span> <span class="mi">2000</span>  <span class="c1">// Overrides defaultTimeout</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">cache</span> <span class="o">=</span> <span class="nx">Kache</span><span class="p">(</span><span class="s1">'users'</span><span class="p">,</span> <span class="p">{</span><span class="nx">timeout</span><span class="o">:</span> <span class="mi">3000</span><span class="p">});</span> <span class="c1">// Overrides KacheConfig.Timeouts.users</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'User'</span><span class="p">,</span> <span class="s1">'Tom Brady'</span><span class="p">,</span> <span class="mi">4000</span><span class="p">);</span> <span class="c1">// Overrides Kache constructor</span>
+
+<span class="c1">// wait 3.5 seconds...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">));</span> <span class="c1">// Should display Tom Brady</span>
+<span class="p">},</span> <span class="mi">3500</span><span class="p">);</span>
+
+<span class="c1">// wait 4.5 seconds...</span>
+<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'User'</span><span class="p">));</span> <span class="c1">// Should have expired</span>
+<span class="p">},</span> <span class="mi">4500</span><span class="p">);</span>
+</pre></div>
+
+<h2>Contributing</h2>
+
+<p>Changes should be made to src/kache.coffee and built.  In order to build you'll need to install CoffeeScript.</p>
+
+<pre><code>$ npm install -g coffee-script
+</code></pre>
+
+<p>Leave off the <code>-g</code> if you don't wish to install globally.</p>
+
+<pre><code>$ cd /path/to/kache
+$ cake build
+</code></pre>
+
+<h2>Running tests</h2>
+
+<pre><code>$ open public/index.html
+</code></pre>
+
+<p>Or, if you have jasmine installed:</p>
+
+<pre><code>$ rake jasmine:ci
+</code></pre>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/leveille">leveille</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
